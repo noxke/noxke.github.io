@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.Java层分析使用jadx打开题目apk，查看AndroidManifest.xml获取程序入口Activity为com.example.crackme1.MainActivity 查看反编译的MainActivity类的onCreate方法，分析Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="游戏客户端开发基础-移动篇">
+<meta property="og:url" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.Java层分析使用jadx打开题目apk，查看AndroidManifest.xml获取程序入口Activity为com.example.crackme1.MainActivity 查看反编译的MainActivity类的onCreate方法，分析Java">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-15-05-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-15-22-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-17-23-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-18-57-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-19-20-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-27-47-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-09-13-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-23-02-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-16-24-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-16-40-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-17-08-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-24-14-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-27-51-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-28-08-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-28-27-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-29-33-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-34-04-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-35-36-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-37-39-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-12-56-17-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-32-08-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-46-53-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-47-45-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-48-34-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-51-27-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-13-52-02-image.png">
+<meta property="article:published_time" content="2023-10-09T03:29:56.000Z">
+<meta property="article:modified_time" content="2023-10-16T09:55:25.258Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="Reverse Engineering">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/2023-10-09-11-15-05-image.png">
+  
+  
+  
+  <title>游戏客户端开发基础-移动篇 - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="游戏客户端开发基础-移动篇"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-09 11:29" pubdate>
+          2023年10月9日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          113 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">游戏客户端开发基础-移动篇</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><a target="_blank" rel="noopener" href="https://github.com/noxke/TencentGameClientOpenCourse">GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班</a></p>
+<h3 id="1-Java层分析"><a href="#1-Java层分析" class="headerlink" title="1.Java层分析"></a>1.Java层分析</h3><p>使用jadx打开题目apk，查看AndroidManifest.xml获取程序入口Activity为<code>com.example.crackme1.MainActivity</code></p>
+<p>查看反编译的<code>MainActivity</code>类的<code>onCreate</code>方法，分析Java层逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onCreate</span><span class="hljs-params">(Bundle savedInstanceState)</span> &#123;<br>    <span class="hljs-built_in">super</span>.onCreate(savedInstanceState);<br>    <span class="hljs-type">ActivityMainBinding</span> <span class="hljs-variable">inflate</span> <span class="hljs-operator">=</span> ActivityMainBinding.inflate(getLayoutInflater());<br>    <span class="hljs-built_in">this</span>.binding = inflate;<br>    setContentView(inflate.getRoot());<br>    <span class="hljs-type">Button</span> <span class="hljs-variable">button</span> <span class="hljs-operator">=</span> (Button) findViewById(C0462R.C0465id.button);<br>    <span class="hljs-built_in">this</span>.btn1 = button;<br>    button.setOnClickListener(<span class="hljs-keyword">new</span> <span class="hljs-title class_">View</span>.OnClickListener() &#123; <span class="hljs-comment">// from class: com.example.crackme1.MainActivity.1</span><br>        <span class="hljs-meta">@Override</span> <span class="hljs-comment">// android.view.View.OnClickListener</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onClick</span><span class="hljs-params">(View v)</span> &#123;<br>            <span class="hljs-type">EditText</span> <span class="hljs-variable">textInput</span> <span class="hljs-operator">=</span> (EditText) MainActivity.<span class="hljs-built_in">this</span>.findViewById(C0462R.C0465id.TextInput);<br>            <span class="hljs-type">String</span> <span class="hljs-variable">Inputstr</span> <span class="hljs-operator">=</span> textInput.getText().toString();<br>            <span class="hljs-type">String</span> <span class="hljs-variable">RetStr</span> <span class="hljs-operator">=</span> MainActivity.<span class="hljs-built_in">this</span>.stringFromJNI(Inputstr);<br>            Toast.makeText(MainActivity.<span class="hljs-built_in">this</span>, RetStr, <span class="hljs-number">0</span>).show();<br>        &#125;<br>    &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>按钮触发点击事件后，调用<code>onClick</code>方法，获取输入框的输入字符串<code>Inputstr</code>，将输入字符串<code>Inputstr</code>调用<code>stringFromJNI</code>方法，并将返回字符串<code>RetStr</code>显示为toast消息</p>
+<p>查看处理字符串的<code>stringFromJNI</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">native</span> String <span class="hljs-title function_">stringFromJNI</span><span class="hljs-params">(String str)</span>;<br><br><span class="hljs-keyword">static</span> &#123;<br>    System.loadLibrary(<span class="hljs-string">&quot;crackme1&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该方法为native文件<code>libcrackme1.so</code>中的导出函数</p>
+<p>使用Android Studio打开apk文件进行调试，对<code>onClick</code>方法中的<code>stringFromJNI</code>调用行下断点，开始调试运行</p>
+<p><img src="2023-10-09-11-15-05-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="2023-10-09-11-15-22-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>调用<code>stringFromJNI</code>前，参数寄存器v0为输入的字符串，单步跳过该行调用，查看返回值</p>
+<p><img src="2023-10-09-11-17-23-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>返回值v2寄存器为字符串<code>Wrong</code>，继续运行程序，字符串<code>wrong</code>以toast消息显示在屏幕上</p>
+<p><img src="2023-10-09-11-18-57-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="2023-10-09-11-19-20-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>查看logcat发现，调用<code>stringFromJNI</code>函数时程序会打印log信息<code>Str:...</code>，并且每次点击按钮调用函数时打印的字符串均不相同</p>
+<h3 id="2-Native层分析"><a href="#2-Native层分析" class="headerlink" title="2.Native层分析"></a>2.Native层分析</h3><p>分析和调试Java层发现，程序的字符串校验功能位于native层的<code>stringFromJNI</code>函数中，该函数为<code>libcrackme1.so</code>动态库的导出函数，该库文件位于<code>crackme1/lib/armeabi-v7a/</code>目录下，因此程序需要使用支持armabi-v7a的设备运行</p>
+<p>使用readelf工具查看<code>libcrackme1.so</code>的导出函数</p>
+<p><img src="2023-10-09-11-27-47-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>stringFromJNI</code>函数偏移地址为<code>0x1194</code>，函数偏移最低位为0，Arm模式执行</p>
+<p>使用ida32打开<code>libcrackme1.so</code>文件查看<code>stringFromJNI</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __fastcall <span class="hljs-title function_">Java_com_example_crackme1_MainActivity_stringFromJNI</span><span class="hljs-params">(<span class="hljs-type">int</span> a1, <span class="hljs-type">int</span> a2, <span class="hljs-type">int</span> a3)</span><br>&#123;<br>  <span class="hljs-type">char</span> *s2; <span class="hljs-comment">// [sp+Ch] [bp-7Ch]</span><br>  <span class="hljs-type">char</span> s[<span class="hljs-number">100</span>]; <span class="hljs-comment">// [sp+20h] [bp-68h] BYREF</span><br><br>  s2 = (<span class="hljs-type">char</span> *)sub_12A4(a1, a3, <span class="hljs-number">0</span>);<br>  <span class="hljs-built_in">memset</span>(s, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(s));<br>  qmemcpy(s, <span class="hljs-string">&quot;123&quot;</span>, <span class="hljs-number">3</span>);<br>  sub_F50(<span class="hljs-number">5</span>, s);<br>  <span class="hljs-keyword">if</span> ( !<span class="hljs-built_in">strncmp</span>(s, s2, <span class="hljs-number">5u</span>) || (sub_1134() &amp; <span class="hljs-number">1</span>) != <span class="hljs-number">0</span> )<br>    <span class="hljs-keyword">return</span> sub_12EC(a1, <span class="hljs-string">&quot;right&quot;</span>);<br>  <span class="hljs-keyword">else</span><br>    <span class="hljs-keyword">return</span> sub_12EC(a1, <span class="hljs-string">&quot;wrong&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>根据反编译c代码，函数将输入字符串<code>s2</code>与<code>sub_F50</code>函数生成的字符串s进行比较，当比较结果相同时，返回字符串<code>right</code>，不同时返回结果<code>wrong</code></p>
+<p>查看<code>sub_F50</code>函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> __fastcall <span class="hljs-title function_">sub_F50</span><span class="hljs-params">(<span class="hljs-type">int</span> a1, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *a2)</span><br>&#123;<br>  <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> v2; <span class="hljs-comment">// r0</span><br>  <span class="hljs-type">int</span> v3; <span class="hljs-comment">// r1</span><br>  <span class="hljs-type">int</span> v5; <span class="hljs-comment">// [sp+8h] [bp-28h]</span><br>  <span class="hljs-type">int</span> i; <span class="hljs-comment">// [sp+14h] [bp-1Ch]</span><br>  <span class="hljs-type">size_t</span> v9; <span class="hljs-comment">// [sp+2Ch] [bp-4h]</span><br><br>  v2 = time(<span class="hljs-number">0</span>);<br>  srand(v2);<br>  <span class="hljs-keyword">for</span> ( i = <span class="hljs-number">0</span>; i &lt; a1; ++i )<br>  &#123;<br>    v5 = rand();<br>    v9 = _strlen_chk(a0123456789abcd, <span class="hljs-number">0x40</span>u);<br>    sub_2964(v5, v9);<br>    a2[i] = a0123456789abcd[v3];<br>  &#125;<br>  a2[i] = <span class="hljs-number">0</span>;<br>  <span class="hljs-keyword">return</span> _android_log_print(<span class="hljs-number">4</span>, <span class="hljs-string">&quot;Crack&quot;</span>, <span class="hljs-string">&quot;Str:%s&quot;</span>, a2);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该函数生成一个随机字符串，并在log中打印该字符串，因此在log中看到的<code>Str:...</code>就是进行比较的字符串</p>
+<p>在if判断中，除了比较字符串是否相等，还对<code>sub_1134</code>函数返回值进行判断，分析该函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">sub_1134</span><span class="hljs-params">()</span><br>&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<img title="" src="2023-10-09-12-09-13-image.png" srcset="/img/loading.gif" lazyload alt="" width="475">
+
+<p>反编译的c代码中该函数直接返回0,但根据汇编代码，该函数内存在打印log信息的函数调用，提示<code>hook this func to return true</code>，但该分支永远不会执行，因此logcat中未查看到该log信息，按照提示，后续选择该函数进行hook，其偏移地址为<code>0x1134</code>，后续称为<code>proc</code>，函数偏移地址最低为为0，Arm模式执行</p>
+<p>查看<code>/proc/pid/maps</code>文件查看<code>libcrackme1.so</code>内存映射信息</p>
+<p><img src="2023-10-09-12-23-02-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>libcrackme1.so</code>的加载基地址为<code>0xe36f0000</code>，因此<code>stringFromJNI</code>函数在内存中的地址为<code>0xe36f1194</code></p>
+<p>ida对<code>stringFromJNI</code>和<code>proc</code>下断点，附加到<code>com.example.crackme1</code>进程进行调试</p>
+<p>调试器附加后发现线程13032触发了SIGABRT信号，导致程序中断，如果继续运行程序将信号传送给进程，程序会崩溃无法调试，该处需要将对产生该信号的线程挂起，并忽略该信号避免该线程恢复运行</p>
+<img src="2023-10-09-12-16-24-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="290">
+
+<img src="2023-10-09-12-16-40-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="293">
+
+<img src="2023-10-09-12-17-08-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="294">
+
+<p>在程序输入字符串点击确认按钮，Android Studio单步执行<code>stringFromJNI</code>方法，ida在<code>stringFromJNI</code>函数入口断下，函数地址为<code>0xe36f1194</code>，与上述计算相同</p>
+<img title="" src="2023-10-09-12-24-14-image.png" srcset="/img/loading.gif" lazyload alt="" width="493">
+
+<p>运行到生成随机字符串的函数返回，strcmp之前，查看两个字符串内容</p>
+<img title="" src="2023-10-09-12-27-51-image.png" srcset="/img/loading.gif" lazyload alt="" width="491">
+
+<img title="" src="2023-10-09-12-28-08-image.png" srcset="/img/loading.gif" lazyload alt="" width="485">
+
+<img title="" src="2023-10-09-12-28-27-image.png" srcset="/img/loading.gif" lazyload alt="" width="482">
+
+<p>分别为生成的随机字符串和输入字符串，查看log信息</p>
+<img title="" src="2023-10-09-12-29-33-image.png" srcset="/img/loading.gif" lazyload alt="" width="479">
+
+<p>log打印的字符串为函数生成的随机字符串</p>
+<p>断点到<code>proc</code>函数</p>
+<img title="" src="2023-10-09-12-34-04-image.png" srcset="/img/loading.gif" lazyload alt="" width="479">
+
+<p>对函数的BEQ执行进行修改，使起能够打印log信息，并在函数返回时，将返回值R0寄存器修改为1</p>
+<img title="" src="2023-10-09-12-35-36-image.png" srcset="/img/loading.gif" lazyload alt="" width="477">
+
+<p>出现<code>hook this func to return true</code>log信息，继续运行程序，使<code>stringFromJNI</code>函数返回</p>
+<p><img src="2023-10-09-12-37-39-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>smali代码中<code>stringFromJNI</code>返回<code>right</code>，继续运行程序，屏幕显示toast消息<code>right</code></p>
+<h3 id="3-ptrace注入程序"><a href="#3-ptrace注入程序" class="headerlink" title="3.ptrace注入程序"></a>3.ptrace注入程序</h3><p>使用ptrace注入程序大致分为以下几个步骤</p>
+<ul>
+<li><p>使用PTRACE_ATTACH附加的进程</p>
+</li>
+<li><p>手动调用malloc函数在进程内分配内存</p>
+</li>
+<li><p>使用PTRACE_WRITE将要注入的so文件路径写入进程内存</p>
+</li>
+<li><p>手动调用dlopen函数将so文件加载到进程内存</p>
+</li>
+<li><p>使用PTRACE_CONT恢复进程运行，使用PTRACE_DETACH从进程脱离</p>
+</li>
+</ul>
+<p>其中需要手动调用的函数<code>malloc</code>位于<code>libc.so</code>中，函数<code>dlopen</code>位于<code>libdl.so</code>中，使用readelf查看<code>libc.so</code>和<code>libdl.so</code>的导出信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">adb shell<br>lmipro:/ $ su<br>lmipro:/ # readelf -s -W /apex/com.android.runtime/lib/bionic/libc.so |\<br><span class="hljs-meta prompt_">&gt; </span><span class="language-bash">grep malloc</span><br>   536: 0002d685    76 FUNC    GLOBAL DEFAULT   17 malloc<br><br>lmipro:/ # readelf -s -W /apex/com.android.runtime/lib/bionic/libdl.so |\                                                                             <br><span class="hljs-meta prompt_">&gt; </span><span class="language-bash">grep dlopen</span><br>    19: 00001849    10 FUNC    WEAK   DEFAULT   10 dlopen<br></code></pre></td></tr></table></figure>
+
+<p><code>malloc</code>函数的偏移地址为<code>0x2d685</code>，<code>dlopen</code>函数的编译地址为<code>0x1849</code>，注意到两个函数偏移地址最低位都是1，处理器在执行这两个函数时需要进入Thumb模式</p>
+<blockquote>
+<p>Armv7a处理器指令集指令长度为4字节，当处理器进入Thumb模式后，指令长度为2字节，或拓展长度为4字节，当PC跳转的目的地址指令最低为为1时，处理器需要进入Thumb模式，置CPSR寄存器第5位为1，当恢复arm模式时，置CPSR寄存器第5位为0</p>
+<img title="" src="2023-10-09-12-56-17-image.png" srcset="/img/loading.gif" lazyload alt="" width="394">
+
+<p>在c标准函数调用时，前4个参数依次存放在R0~R3寄存器中，剩余的参数从右向左依次压入栈中，返回地址存放在LR寄存器中，返回值存放在R0寄存器中</p>
+</blockquote>
+<p>使用ptrace手动调用函数时，需要先使用PTRACE_GETREGS保存进程的寄存器信息，然后减小SP寄存器创建栈帧，将函数参数依次存放到R0~R3寄存器中，剩余参数存放到栈中，然后根据函数地址设置PC寄存器和CPSR寄存器，PC寄存器设置为函数地址，最低位置0，根据函数地址最低位设置CPSR寄存器Thumb模式标志为，然后设置LR寄存器为0,使函数返回时，触发错误停止</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// PC寄存器，低位决定处理器模式</span><br>regs.uregs[<span class="hljs-number">15</span>] = ((<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)proc_addr &amp; <span class="hljs-number">0xFFFFFFFE</span>);<br><span class="hljs-comment">// PSR寄存器，第5位决定Thumb模式,根据函数地址最低位确定是否进入Thumb模式</span><br><span class="hljs-keyword">if</span> ((<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)proc_addr &amp; <span class="hljs-number">0x1</span>)<br>&#123;<br>    <span class="hljs-comment">// Thumb模式</span><br>    regs.uregs[<span class="hljs-number">16</span>] = regs.uregs[<span class="hljs-number">16</span>] | <span class="hljs-number">0x20</span>;<br>&#125;<br><span class="hljs-keyword">else</span><br>&#123;<br>    <span class="hljs-comment">// arm模式</span><br>    regs.uregs[<span class="hljs-number">16</span>] = regs.uregs[<span class="hljs-number">16</span>] &amp; <span class="hljs-number">0xFFFFFFDF</span>;<br>&#125;<br><span class="hljs-comment">// LR寄存器</span><br>regs.uregs[<span class="hljs-number">14</span>] = <span class="hljs-number">0</span>;<br></code></pre></td></tr></table></figure>
+
+<p>完成寄存器设置后，使用PTRACE_SETREGS将设置进程寄存器为修改后的寄存器，使用PTRACE_CONT恢复进程运行，waitpid等待进程触发返回异常,当进程触发返回异常断下是，waitpid返回状态码为<code>0xb7f</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">if</span> (ptrace_setregs(pid, &amp;regs) != <span class="hljs-number">0</span> || ptrace_continue(pid) != <span class="hljs-number">0</span>)<br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;call proc 0x%lx failed\n&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)proc_addr);<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>&#125;<br><span class="hljs-comment">// 等待函数执行完返回错误</span><br>waitpid(pid, &amp;status, WUNTRACED);<br><span class="hljs-comment">// printf(&quot;0x%x\n&quot;, status);</span><br><span class="hljs-keyword">while</span> (status != <span class="hljs-number">0xb7f</span>)<br>&#123;<br>    ptrace_continue(pid);<br>    waitpid(pid, &amp;status, WUNTRACED);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>进程返回后，使用PTRACE_GETREGS获取寄存器，读取返回值R0寄存器，并使用调用函数前保存的寄存器恢复进程寄存器</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">ptrace_getregs(pid, &amp;regs);<br><span class="hljs-comment">// 返回值在R0中</span><br>ret = (<span class="hljs-type">void</span> *)regs.uregs[<span class="hljs-number">0</span>];<br><span class="hljs-comment">// 恢复寄存器</span><br>ptrace_setregs(pid, &amp;saved_regs);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;proc 0x%lx return value: 0x%lx\n&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)proc_addr, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)ret);<br><span class="hljs-keyword">return</span> ret;<br></code></pre></td></tr></table></figure>
+
+<p>调用<code>malloc</code>函数和<code>dlopen</code>函数之前，需要获取函数在内存中的加载地址，读取<code>/proc/self/maps</code>文件可以得到<code>libc.so</code>和<code>libdl.so</code>加载的基地址，使用<code>dlopen</code>加载so文件，使用<code>dlsym</code>可以获得<code>malloc</code>和<code>dlopen</code>函数在注入器进程中的加载地址，与so文件基地址相减得到偏移地址，然后读取<code>/proc/pid/maps</code>文件可以获取待注入进程中<code>libc.so</code>和<code>libdl.so</code>加载基地址，根据偏移地址得到<code>malloc</code>和<code>dlopen</code>在待注入进程中的地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 获取proc函数的内存地址</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">get_remote_proc_addr</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *lib_path, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *proc_name)</span><br>&#123;<br>    <span class="hljs-type">void</span> *handle;<br>    <span class="hljs-type">void</span> *local_module_base;<br>    <span class="hljs-type">void</span> *local_proc_addr;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> proc_offset;<br>    <span class="hljs-type">void</span> *remote_module_base;<br>    <span class="hljs-type">void</span> *remote_proc_addr;<br>    <span class="hljs-comment">// 在本地加载lib文件并获取proc函数偏移</span><br>    handle = dlopen(lib_path, RTLD_LAZY);<br>    <span class="hljs-keyword">if</span> (handle == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;open %s failed\n&quot;</span>, lib_path);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    &#125;<br>    dlerror();<br>    local_module_base = get_module_base(<span class="hljs-number">0</span>, lib_path);<br>    local_proc_addr = dlsym(handle, proc_name);<br>    proc_offset = local_proc_addr - local_module_base;<br>    dlclose(handle);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s offset: 0x%lx\n&quot;</span>, proc_name, proc_offset);<br>    remote_module_base = get_module_base(pid, lib_path);<br>    remote_proc_addr = remote_module_base + proc_offset;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s address: 0x%lx\n&quot;</span>, proc_name, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)remote_proc_addr);<br>    <span class="hljs-keyword">return</span> remote_proc_addr;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注入器函数如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 注入so到进程</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">inject_lib</span><span class="hljs-params">(<span class="hljs-type">pid_t</span> pid, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *lib_path)</span><br>&#123;<br>    <span class="hljs-type">int</span> status;<br>    <span class="hljs-type">void</span> *params[<span class="hljs-number">10</span>];<br>    <span class="hljs-type">void</span> *proc_malloc;<br>    <span class="hljs-type">void</span> *proc_dlopen;<br>    <span class="hljs-type">void</span> *proc_dlerror;<br>    <span class="hljs-type">void</span> *mem_buf;<br>    proc_malloc = get_remote_proc_addr(pid, libc_path, <span class="hljs-string">&quot;malloc&quot;</span>);<br>    proc_dlopen = get_remote_proc_addr(pid, libdl_path, <span class="hljs-string">&quot;dlopen&quot;</span>);<br>    proc_dlerror = get_remote_proc_addr(pid, libdl_path, <span class="hljs-string">&quot;dlerror&quot;</span>);<br>    <span class="hljs-comment">// 首先附加到进程</span><br>    ptrace_attach(pid);<br>    <span class="hljs-comment">// 调用malloc分配内存写入lib文件路径</span><br>    params[<span class="hljs-number">0</span>] = (<span class="hljs-type">void</span> *)<span class="hljs-number">0x100</span>;<br>    mem_buf = ptrace_call(pid, proc_malloc, <span class="hljs-number">1</span>, params);<br>    <span class="hljs-keyword">if</span> (mem_buf == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;malloc memory failed\n&quot;</span>);<br>        ptrace_continue(pid);<br>        ptrace_detach(pid);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;malloc memory at 0x%lx\n&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)mem_buf);<br>    <span class="hljs-comment">// 将lib路径写入进程内存</span><br>    ptrace_write(pid, mem_buf, <span class="hljs-built_in">strlen</span>(lib_path) + <span class="hljs-number">1</span>, (<span class="hljs-type">void</span> *)lib_path);<br>    <span class="hljs-comment">// 调用dlopen将lib文件加载到进程</span><br>    params[<span class="hljs-number">0</span>] = mem_buf;<br>    params[<span class="hljs-number">1</span>] = (<span class="hljs-type">void</span> *)RTLD_LAZY;<br>    <span class="hljs-keyword">if</span> (ptrace_call(pid, proc_dlopen, <span class="hljs-number">2</span>, params) == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;dlopen load %s to process %d failed\n&quot;</span>, lib_path, pid);<br>        <span class="hljs-comment">// 调用dlerror查看错误原因</span><br>        <span class="hljs-type">void</span> *err_addr = ptrace_call(pid, proc_dlerror, <span class="hljs-number">0</span>, params);<br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> err[<span class="hljs-number">0x100</span>];<br>        ptrace_read(pid, err_addr, <span class="hljs-number">0x100</span>, (<span class="hljs-type">void</span> *)err);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%s\n&quot;</span>, err);<br>        ptrace_continue(pid);<br>        ptrace_detach(pid);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;dlopen load %s to process %d succeed\n&quot;</span>, lib_path, pid);<br>    ptrace_continue(pid);<br>    ptrace_detach(pid);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译注入器上传到手机进行测试</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs shell">❯ armv7a-linux-androideabi33-clang -o injector ptrace_injector.c<br>❯ adb push injector /data/local/tmp<br>injector: 1 file pushed, 0 skipped. 130.1 MB/s (11088 bytes in 0.000s)<br><br>❯ adb shell<br>lmipro:/ $ su<br>lmipro:/ # cd /data/local/tmp<br>lmipro:/data/local/tmp # ./injector com.example.crackme1 /data/local/tmp/libhook.so<br>pid of com.example.crackme1: 21551<br>/apex/com.android.runtime/lib/bionic/libc.so at 0xf6a52000<br>malloc offset: 0x2d685<br>/apex/com.android.runtime/lib/bionic/libc.so at 0xeac4f000<br>malloc address: 0xeac7c685<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xf6a0c000<br>dlopen offset: 0x1849<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xe9f92000<br>dlopen address: 0xe9f93849<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xf6a0c000<br>dlerror offset: 0x1853<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xe9f92000<br>dlerror address: 0xe9f93853<br>attach to process pid: 21551<br>proc 0xeac7c685 param 0 value: 0x100<br>proc 0xeac7c685 return value: 0x7b4e0700<br>malloc memory at 0x7b4e0700<br>write 0x1b bytes, start-addr: 0x7b4e0700<br>proc 0xe9f93849 param 0 value: 0x7b4e0700<br>proc 0xe9f93849 param 1 value: 0x1<br>proc 0xe9f93849 return value: 0x0<br>dlopen load /data/local/tmp/libhook.so to process 21551 failed<br>proc 0xe9f93853 return value: 0xec8f6514<br>read 0x100 bytes, start-addr: 0xec8f6514<br>dlopen failed: couldn&#x27;t map &quot;/data/local/tmp/libhook.so&quot; segment 2: Permission denied<br></code></pre></td></tr></table></figure>
+
+<p>根据打印信息，注入器在待注入进程中调用<code>malloc</code>方法成功分配了内存，但是调用<code>dlopen</code>返回值为<code>NULL</code>，加载so文件失败，调用<code>dlerror</code>查看到返回错误消息为<code>dlopen failed: couldn&#39;t map &quot;/data/local/tmp/libhook.so&quot; segment 2: Permission denied</code>，说明so路径写入正确，进一步尝试发现，该错误与SELinux有关，开启SELinux模式后，进程无法加载非系统lib目录下的so文件，关闭SELinux后进行注入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs shell">lmipro:/data/local/tmp # getenforce                                                                                                                       <br>Enforcing<br>lmipro:/data/local/tmp # setenforce 0                                                                                                                     <br>lmipro:/data/local/tmp # getenforce                                                                                                                       <br>Permissive<br>lmipro:/data/local/tmp # ./injector com.example.crackme1 /data/local/tmp/libhook.so                                                                       <br>pid of com.example.crackme1: 21551<br>/apex/com.android.runtime/lib/bionic/libc.so at 0xf274d000<br>malloc offset: 0x2d685<br>/apex/com.android.runtime/lib/bionic/libc.so at 0xeac4f000<br>malloc address: 0xeac7c685<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xf270c000<br>dlopen offset: 0x1849<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xe9f92000<br>dlopen address: 0xe9f93849<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xf270c000<br>dlerror offset: 0x1853<br>/apex/com.android.runtime/lib/bionic/libdl.so at 0xe9f92000<br>dlerror address: 0xe9f93853<br>attach to process pid: 21551<br>proc 0xeac7c685 param 0 value: 0x100<br>proc 0xeac7c685 return value: 0x7b4e0800<br>malloc memory at 0x7b4e0800<br>write 0x1b bytes, start-addr: 0x7b4e0800<br>proc 0xe9f93849 param 0 value: 0x7b4e0800<br>proc 0xe9f93849 param 1 value: 0x1<br>proc 0xe9f93849 return value: 0x5fe6de0b<br>dlopen load /data/local/tmp/libhook.so to process 21551 succeed<br></code></pre></td></tr></table></figure>
+
+<p>注入成功，查看<code>/proc/pid/maps</code>中模块加载信息</p>
+<p><img src="2023-10-09-13-32-08-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>libhook.so成功加载到进程内存</p>
+<h3 id="4-inline-hook"><a href="#4-inline-hook" class="headerlink" title="4.inline hook"></a>4.inline hook</h3><p>根据提示，选择hook的函数为<code>proc</code>，偏移地址<code>0x1134</code>，此处选择使用inline hook的方式实现</p>
+<p>首先在<code>libhook.c</code>文件中定义替代<code>proc</code>的函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">hookProc</span><span class="hljs-params">()</span><br>&#123;<br>    LOGD(<span class="hljs-string">&quot;hook and return TRUE&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数打印log信息并返回1，使<code>stringFromJNI</code>函数返回<code>right</code></p>
+<p>跳转到该函数使用如下汇编指令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asm6502">LDR R0, [PC+8]<br>MOV PC, R0<br>hookProc_addr<br></code></pre></td></tr></table></figure>
+
+<p>跳转码共12个字节，将<code>hookProc</code>的地址先加载到R0寄存器，使用MOV指令修改PC寄存器到<code>hookProc</code>函数，由于<code>hookProc</code>函数的作用是代替<code>proc</code>执行，参数、返回值、返回地址均不需要额外处理</p>
+<p>修改<code>libcrackme1.so</code>加载处内存的保护权限，将12个字节跳转码写入<code>proc</code>函数起始处，完成hook操作</p>
+<p>so文件注入后的自动执行可以使用<code>__attribute__((constructor))</code>属性声明函数，该属性声明的函数会在dlopen函数返回前执行</p>
+<p>设置hook的代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">sethook</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-comment">// 首先获取libcrackme1.so加载的基地址</span><br>    <span class="hljs-type">void</span> *lib_base = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> proc_offset = <span class="hljs-number">0x1134</span>;<br>    <span class="hljs-type">void</span> *proc_addr;<br>    FILE *fp;<br>    <span class="hljs-type">char</span> line[<span class="hljs-number">0x100</span>];<br>    fp = fopen(<span class="hljs-string">&quot;/proc/self/maps&quot;</span>, <span class="hljs-string">&quot;rt&quot;</span>);<br>    fgets(line, <span class="hljs-number">0x100</span>, fp);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-built_in">strlen</span>(line) != <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(line, <span class="hljs-string">&quot;libcrackme1.so&quot;</span>) != <span class="hljs-literal">NULL</span>)<br>        &#123;<br>            <span class="hljs-built_in">sscanf</span>(line, <span class="hljs-string">&quot;%lx&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>*)&amp;lib_base);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        fgets(line, <span class="hljs-number">0x100</span>, fp);<br>    &#125;<br>    fclose(fp);<br>    <span class="hljs-keyword">if</span> (lib_base == <span class="hljs-literal">NULL</span>)<br>    &#123;<br>        LOGD(<span class="hljs-string">&quot;get libcrackme1.so base failed&quot;</span>);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    LOGD(<span class="hljs-string">&quot;libcrackme1.so at 0x%lx&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)lib_base);<br>    proc_addr = (<span class="hljs-type">void</span> *)((<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)lib_base + proc_offset);<br>    LOGD(<span class="hljs-string">&quot;hook proc at 0x%lx&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)proc_addr);<br>    LOGD(<span class="hljs-string">&quot;new proc at 0x%lx&quot;</span>, (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)hookProc);<br>    <span class="hljs-comment">// LDR R0, [PC+8]</span><br>    <span class="hljs-comment">// MOV PC, R0</span><br>    <span class="hljs-comment">// hookProc</span><br>    <span class="hljs-comment">// 修改段保护</span><br>    <span class="hljs-keyword">if</span> (mprotect(lib_base, <span class="hljs-number">0x2000</span>, PROT_READ | PROT_WRITE | PROT_EXEC) != <span class="hljs-number">0</span>)<br>    &#123;<br>        LOGD(<span class="hljs-string">&quot;mprotect failed&quot;</span>);<br>        perror(<span class="hljs-string">&quot;mprotect&quot;</span>);<br>        LOGD(<span class="hljs-string">&quot;Error: %s\n&quot;</span>, strerror(errno));<br>    &#125;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> jumpCode[<span class="hljs-number">0xc</span>] = &#123;<span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x9F</span>, <span class="hljs-number">0xE5</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0xF0</span>, <span class="hljs-number">0xA0</span>, <span class="hljs-number">0xE1</span>&#125;;<br>    *(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> *)(jumpCode + <span class="hljs-number">8</span>) = (<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span>)hookProc;<br>    __memcpy(proc_addr, (<span class="hljs-type">void</span> *)jumpCode, <span class="hljs-number">0xc</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>设置log和so入口函数如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">void</span> <span class="hljs-title function_">onload</span><span class="hljs-params">()</span> __<span class="hljs-title function_">attribute__</span><span class="hljs-params">((constructor))</span>;<br><br><span class="hljs-type">void</span> (*__android_log_print)(<span class="hljs-type">int</span> i, ...);<br><span class="hljs-type">void</span> *handle;<br><span class="hljs-meta">#<span class="hljs-keyword">define</span> TAG <span class="hljs-string">&quot;Crack&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> LOGD(...) __android_log_print(3, TAG, __VA_ARGS__)  </span><br><span class="hljs-type">void</span> *(*__memcpy)(<span class="hljs-type">void</span> *dst, <span class="hljs-type">void</span> *src, <span class="hljs-type">size_t</span> n);<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">onload</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-comment">// 设置LOGD</span><br>    handle = dlopen(<span class="hljs-string">&quot;/system/lib/liblog.so&quot;</span>, RTLD_LAZY);<br>    __android_log_print = (<span class="hljs-type">void</span> (*)(<span class="hljs-type">int</span>, ...))dlsym(handle, <span class="hljs-string">&quot;__android_log_print&quot;</span>);<br>    dlclose(handle);<br>    <span class="hljs-comment">// 获取memcpy</span><br>    handle = dlopen(<span class="hljs-string">&quot;/apex/com.android.runtime/lib/bionic/libc.so&quot;</span>, RTLD_LAZY);<br>    __memcpy = (<span class="hljs-type">void</span> *(*)(<span class="hljs-type">void</span> *, <span class="hljs-type">void</span> *, <span class="hljs-type">size_t</span>))dlsym(handle, <span class="hljs-string">&quot;memcpy&quot;</span>);<br>    dlclose(handle);<br><br>    LOGD(<span class="hljs-string">&quot;injected by noxke&quot;</span>);<br>    sethook();<br>    <span class="hljs-keyword">return</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中的<code>__android_log_print</code>和<code>memcpy</code>需要使用<code>dlopen</code>和<code>dlsym</code>获取</p>
+<p>编译hook代码，上传并注入到<code>com.example.crackme1</code>进程中</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">armv7a-linux-androideabi33-clang libhook.c -shared -fPIC -o libhook.so<br>❯ adb push libhook.so /data/local/tmp/<br>libhook.so: 1 file pushed, 0 skipped. 106.0 MB/s (7180 bytes in 0.000s)<br><br>❯ adb shell<br>lmipro:/ $ cd /data/local/tmp<br>lmipro:/data/local/tmp $ su<br>lmipro:/data/local/tmp # ./injector com.example.crackme1 /data/local/tmp/libhook.so<br></code></pre></td></tr></table></figure>
+
+<p>使用logcat查看log信息</p>
+<p><img src="2023-10-09-13-46-53-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>随意输入字符串，点击确定按钮</p>
+<img src="2023-10-09-13-47-45-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="216">
+
+<p>logcat打印日志</p>
+<p><img src="2023-10-09-13-48-34-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>hook结果与所需结果相同，<code>proc</code>代码的调用会被跳转到<code>hookProc</code>执行并返回，<code>stringFromJNI</code>返回<code>right</code>字符串</p>
+<p>使用ida查看修改后的<code>proc</code>函数和<code>hookProc</code>函数</p>
+<img src="2023-10-09-13-51-27-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="492">
+
+<img src="2023-10-09-13-52-02-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="489">
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>游戏客户端开发基础-移动篇</div>
+      <div>https://blog.noxke.icu/2023/10/09/TencentGameClient/客户端安全开发基础-移动篇/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="../../../12/reverse_core/01%E5%85%B3%E4%BA%8E%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" title="01关于逆向工程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01关于逆向工程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../../../02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="移动端调试环境搭建">
+                        <span class="hidden-mobile">移动端调试环境搭建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,763 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.静态分析Java层使用jadx打开题目gslab.demo.apk文件，查看AndroidManifest.xml文件获取软件入口activity为com.example.x86demo.MainActivity 查看该入口activity类的onCrea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="游戏客户端开发基础-移动篇(视频习题)">
+<meta property="og:url" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.静态分析Java层使用jadx打开题目gslab.demo.apk文件，查看AndroidManifest.xml文件获取软件入口activity为com.example.x86demo.MainActivity 查看该入口activity类的onCrea">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-22-42-18-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-22-43-55-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-22-50-46-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-22-58-44-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-06-29-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-08-51-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-17-30-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-18-48-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-20-56-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-22-52-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-26-11-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-28-16-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-29-30-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-30-42-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-23-32-24-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-06-00-03-12-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-06-00-06-29-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-06-00-21-03-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-06-00-22-22-image.png">
+<meta property="article:published_time" content="2023-10-02T05:13:23.000Z">
+<meta property="article:modified_time" content="2023-10-16T09:55:25.245Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="Reverse Engineering">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/2023-10-05-22-42-18-image.png">
+  
+  
+  
+  <title>游戏客户端开发基础-移动篇(视频习题) - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="游戏客户端开发基础-移动篇(视频习题)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-02 13:13" pubdate>
+          2023年10月2日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">游戏客户端开发基础-移动篇(视频习题)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><a target="_blank" rel="noopener" href="https://github.com/noxke/TencentGameClientOpenCourse">GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班</a></p>
+<h3 id="1-静态分析"><a href="#1-静态分析" class="headerlink" title="1.静态分析"></a>1.静态分析</h3><h4 id="Java层"><a href="#Java层" class="headerlink" title="Java层"></a>Java层</h4><p>使用jadx打开题目<code>gslab.demo.apk</code>文件，查看<code>AndroidManifest.xml</code>文件获取软件入口activity为<code>com.example.x86demo.MainActivity</code></p>
+<p>查看该入口activity类的<code>onCreate</code>方法</p>
+<p><img src="2023-10-05-22-42-18-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>TextView对象<code>tv</code>设置的字符串来自<code>stringFromJNI</code>方法</p>
+<p><img src="2023-10-05-22-43-55-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>查看其余部分，<code>stringFromJNI</code>是<code>native-lib</code>中的native函数</p>
+<h4 id="Native层"><a href="#Native层" class="headerlink" title="Native层"></a>Native层</h4><p>该软件提供了<code>armabi-v7a</code>和<code>x86</code>两种处理器架构的<code>libnative-lib.so</code>文件，此处对arm架构so文件进行分析</p>
+<p>使用readelf命令查看<code>libnative-lib.so</code>的导出函数</p>
+<img src="2023-10-05-22-50-46-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="527">
+
+<p><code>stringFromJNI</code>导出函数的偏移地址为<code>0x08bdd</code>，完整导出名称为<code>Java_com_example_x86demo_MainActivity   _stringFromJNI</code></p>
+<blockquote>
+<p>arm指令集每条指令长度为32位，存在指令对其，指令地址低两位均为0，而此处偏移地址最低位为1，表示处理器执行到该处时进入Thumb模式，指令长度变为16位或32位，实际指令偏移地址为<code>0x8bdc</code></p>
+</blockquote>
+<p>使用ida32打开<code>libnative-lib.so</code>文件，定位到导出函数，指令长度大多为16位，表示处理器执行该函数时处于Thumb模式</p>
+<p>反编译查看该函数</p>
+<img src="2023-10-05-22-58-44-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="527">
+
+<p>程序使用C++的string类构造string对象并返回，注意到除了<code>sub_E36E2CA6</code>函数外其它函数均为库函数，因此选择该函数进行hook</p>
+<h3 id="2-动态调试"><a href="#2-动态调试" class="headerlink" title="2.动态调试"></a>2.动态调试</h3><blockquote>
+<p>使用真机(android 13)进行调试，调试工具为android studio和ida</p>
+</blockquote>
+<h4 id="Java层-1"><a href="#Java层-1" class="headerlink" title="Java层"></a>Java层</h4><p>对<code>stringFromJNI</code>调用处的smali代码下断点，连接设备进行调试</p>
+<img src="2023-10-05-23-06-29-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="533">
+
+<p>程序在断点处断下，单步跳过查看<code>stringFromJNI</code>函数的返回值(v1寄存器)</p>
+<img title="" src="2023-10-05-23-08-51-image.png" srcset="/img/loading.gif" lazyload alt="" width="533">
+
+<p>函数返回结果为字符串对象<code>Hello from C++</code></p>
+<p>继续运行程序，屏幕显示<code>Hello from C++</code>字符串</p>
+<h4 id="Native层-1"><a href="#Native层-1" class="headerlink" title="Native层"></a>Native层</h4><p>开启adb端口转发，将ida的dbgsrv上传到手机，进入shell切换到root权限启动dbgsrv</p>
+<p><img src="2023-10-05-23-17-30-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>android studio上开启调试，程序在smali代码断下</p>
+<p>ida对<code>stringFromJNI</code>函数下断点，连接调试器并附加到<code>com.example.x86demo</code>进程，按F9继续运行</p>
+<img src="2023-10-05-23-18-48-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="532">
+
+<p>android studio单步执行，ida上程序在<code>stringFromJNI</code>函数断下</p>
+<img src="2023-10-05-23-20-56-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="507">
+
+<blockquote>
+<p>此处处理器处于Thumb模式</p>
+</blockquote>
+<p>断点到<code>sub_E3722CA6</code>函数内部</p>
+<img src="2023-10-05-23-22-52-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="505">
+
+<p>函数只做了参数传递并调用<code>sub_E3723258</code>函数，<code>sub_E3722CA6</code>的参数为<code>R0</code>寄存器，值为<code>0xFF98C0E8</code>，显然为一个地址，跳转到该地址处</p>
+<img src="2023-10-05-23-26-11-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="513">
+
+<p>猜测该位置为一个结构体，结构体第一个整数为0x11，第二个整数为0x0E，第三个整数为<code>0x77EB6850</code>，第三个数明显为地址，跳转到该地址处</p>
+<img src="2023-10-05-23-28-16-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="509">
+
+<p>该地址处为字符串<code>Hello from C++</code>，对该字符串进行修改测试</p>
+<img src="2023-10-05-23-29-30-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="511">
+
+<p>ida使用F9运行，android studio单步断下，查看<code>stringFromJNI</code>返回值</p>
+<img src="2023-10-05-23-30-42-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="509">
+
+<p>返回值变为了上面修改的字符串，继续运行程序，屏幕上显示修改后的字符串</p>
+<img src="2023-10-05-23-32-24-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="451">
+
+<h3 id="3-使用ptrace注入并hook程序"><a href="#3-使用ptrace注入并hook程序" class="headerlink" title="3.使用ptrace注入并hook程序"></a>3.使用ptrace注入并hook程序</h3><blockquote>
+<p>上述分析中选择<code>sub_E36E2CA6</code>函数进行hook，该函数偏移为<code>0x8ca6</code>，后续称为<code>proc</code></p>
+<p>该函数的调用关系为<code>onCreate-&gt;stringFromJNI-&gt;proc</code>，由于该函数在程序启动时执行，几乎没有等待时间，所以在正常执行的情况下不能够保证100%hook成功</p>
+</blockquote>
+<p>本题使用traphook的方式修改proc函数的参数，思路如下：</p>
+<ol>
+<li><p>ptrace在proc函数开始位置设置软件断点</p>
+</li>
+<li><p>waitpid捕获进程停止信息</p>
+</li>
+<li><p>ptrace获取proc函数参数R0寄存器，得到字符串地址</p>
+</li>
+<li><p>ptrace修改字符串地址处的字符串</p>
+</li>
+<li><p>ptrace禁用断点，恢复程序执行</p>
+</li>
+</ol>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>ptrace函数需要待附加进程的pid，使用<code>pidof com.example.x86demo</code>命令可以获得软件的<code>pid</code></p>
+<p>想要hook <code>proc</code>函数，需要知道其内存中的加载地址，在静态分析中得到了其偏移地址<code>proc_offset = 0x8ca6</code>，还需要<code>libnative-lib.so</code>文件加载的基地址才能计算出<code>proc</code>函数的地址，安卓进程加载的库文件信息可以在<code>/proc/pid/maps</code>文件中找到</p>
+<img src="2023-10-06-00-03-12-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="581">
+
+<p>如图，本次程序运行<code>libnative-lib.so</code>的加载地址为<code>lib_base = e381d000</code>，<code>proc</code>函数的地址为<code>proc_addr = lib_base + proc_offset</code></p>
+<p>c语言中使用popen函数执行命令行目录并获取结果</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 获取进程pid和libnative-lib.so加载的基地址</span><br><span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>&#123;<br>    fp = popen(<span class="hljs-string">&quot;pidof com.example.x86demo &amp;&amp; cat /proc/`pidof com.example.x86demo`/maps | grep libnative-lib.so&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>);<br>    fread(cli_output, <span class="hljs-number">1</span>, <span class="hljs-number">1024</span>, fp);<br>    pclose(fp);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strlen</span>(cli_output) != <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">sscanf</span>(cli_output, <span class="hljs-string">&quot;%d%lx&quot;</span>, &amp;demo_pid, &amp;lib_base);<br>        <span class="hljs-keyword">if</span> (lib_base == <span class="hljs-number">0</span>)<br>        &#123;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;demo_pid: %d\n&quot;</span>, demo_pid);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;libnative-lib.so image base: 0x%lx\n&quot;</span>, lib_base);<br>        <span class="hljs-keyword">break</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="2023-10-06-00-06-29-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用ptrace附加到进程并将<code>proc</code>函数第一条指令修改为软件断点，设置断点前需要保存原始指令，确保后续能够使程序正确运行，设置断点后恢复进程运行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> bp_code = <span class="hljs-number">0x0000BEFF</span>;  <span class="hljs-comment">// 设置FF号断点</span><br><span class="hljs-comment">// 需要hook的函数偏移</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> proc_offset = <span class="hljs-number">0x8ca6</span>;<br><span class="hljs-comment">// 需要hook的函数地址</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> proc_addr = lib_base + proc_offset;<br>    <span class="hljs-comment">// 附加到目标进程</span><br>ptrace(PTRACE_ATTACH, pid, <span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>);<br>waitpid(pid, &amp;status, <span class="hljs-number">0</span>);<br><span class="hljs-comment">// 先保存断点前的指令，再将其设置为断点代码</span><br>ori_code = ptrace(PTRACE_PEEKDATA, pid, (<span class="hljs-type">void</span> *)proc_addr, <span class="hljs-literal">NULL</span>);<br>ptrace(PTRACE_POKEDATA, pid, (<span class="hljs-type">void</span> *)proc_addr, (<span class="hljs-type">void</span> *)bp_code);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;set breakpoint at 0x%lx\n&quot;</span>, proc_addr);<br>ptrace(PTRACE_CONT, pid, <span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>);<br></code></pre></td></tr></table></figure>
+
+<p>当处理器执行到软件断点时会发出<code>SIGTRAP</code>信号，使用waitpid捕获断点信号，并获取寄存器信息，判断PC寄存器地址是否为断点地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 捕获断点</span><br><span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>)<br>&#123;<br>    waitpid(pid, &amp;status, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (WIFSTOPPED(status) &amp;&amp; WSTOPSIG(status) == SIGTRAP)<br>    &#123;<br>        <span class="hljs-comment">// 获取寄存器信息</span><br>        ptrace(PTRACE_GETREGS, pid, <span class="hljs-literal">NULL</span>, &amp;regs);<br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> pc = regs.uregs[<span class="hljs-number">15</span>];<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;break at 0x%lx\n&quot;</span>, pc);<br>        <span class="hljs-keyword">if</span> (pc == proc_addr)<br>        &#123;<br>            <span class="hljs-comment">// hook操作</span><br>        &#125;<br>    &#125;<br>    ptrace(PTRACE_CONT, pid, <span class="hljs-literal">NULL</span>, <span class="hljs-literal">NULL</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当程序在设置的断点处断下后，寄存器R0的值为proc函数的参数，其值为地址，<code>R0+8</code>为字符串地址，使用ptrace修改<code>R0+8</code>处的字符串，实现对<code>stringFromJNI</code>返回值的修改</p>
+<p>完成修改后需要将断点恢复为原始指令</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 获取R0寄存器</span><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> r0 = regs.uregs[<span class="hljs-number">0</span>];<br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> str_addr = ptrace(PTRACE_PEEKDATA, pid, (<span class="hljs-type">void</span> *)(r0 + <span class="hljs-number">8</span>), <span class="hljs-literal">NULL</span>);<br><span class="hljs-type">char</span> ori_str[<span class="hljs-number">0x20</span>];<br><span class="hljs-type">char</span> new_str[<span class="hljs-number">0x20</span>];<br><span class="hljs-built_in">strcpy</span>(new_str, hack_str);<br><span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">0x20</span>; i += <span class="hljs-number">4</span>)<br>&#123;<br>    *(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> *)(ori_str + i) = ptrace(PTRACE_PEEKDATA, pid, (<span class="hljs-type">void</span> *)(str_addr + i), <span class="hljs-literal">NULL</span>);<br>    ptrace(PTRACE_POKEDATA, pid, (<span class="hljs-type">void</span> *)(str_addr + i), (<span class="hljs-type">void</span> *)(*(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> *)(new_str + i)));<br>&#125;<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;str at 0x%lx\n&quot;</span>, str_addr);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;ori str: %s\n&quot;</span>, ori_str);<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;new str: %s\n&quot;</span>, new_str);<br><span class="hljs-comment">// 恢复原来的指令</span><br>ptrace(PTRACE_POKEDATA, pid, (<span class="hljs-type">void</span> *)proc_addr, (<span class="hljs-type">void</span> *)ori_code);<br></code></pre></td></tr></table></figure>
+
+<p>编译程序并上传到手机测试</p>
+<p><img src="2023-10-06-00-21-03-image.png" srcset="/img/loading.gif" lazyload></p>
+<img src="2023-10-06-00-22-22-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="296">
+
+<blockquote>
+<p>x86的hook实现与arm的实现基本相同，除了<code>proc</code>函数的偏移地址不同，以及断点指令不同以外，还需要注意x86处理器在执行int3断点后会将EIP+1，捕获断点后除了将断点指令恢复，还需要将EIP寄存器恢复</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>游戏客户端开发基础-移动篇(视频习题)</div>
+      <div>https://blog.noxke.icu/2023/10/02/TencentGameClient/客户端安全开发基础-移动篇(视频习题)/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="../%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" title="移动端调试环境搭建">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">移动端调试环境搭建</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../../../../09/26/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-PC%E7%AF%87/" title="游戏客户端开发基础-PC篇">
+                        <span class="hidden-mobile">游戏客户端开发基础-PC篇</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

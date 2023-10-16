@@ -7,8 +7,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon.png">
-  <link rel="icon" href="/img/icon.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
@@ -16,22 +16,40 @@
   <meta name="author" content="noxke">
   <meta name="keywords" content="Reverse Engineering">
   
-    <meta name="description" content="noxke is a Reverse Engineering beginner, noxke will record and share his learning experience in this blog, hoping to help you">
+    <meta name="description" content="本篇将介绍安卓软件Java层和Native层调试工具的安装和简单使用 涉及到的软件如下 Android studio jadx Ida Pro 软件安装 jadx和Ida的安装使用都很简单，此处不做介绍，安装Android studio过程需要确保有正常的网络环境，网络配置不做介绍   插件安装 Chinese (Simplified) Language Pack &#x2F; 中文语言包 - I">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hello re">
-<meta property="og:url" content="https://blog.noxke.icu/2023/10/11/hello-re/index.html">
+<meta property="og:title" content="移动端调试环境搭建">
+<meta property="og:url" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="NOXKE">
-<meta property="og:description" content="noxke is a Reverse Engineering beginner, noxke will record and share his learning experience in this blog, hoping to help you">
+<meta property="og:description" content="本篇将介绍安卓软件Java层和Native层调试工具的安装和简单使用 涉及到的软件如下 Android studio jadx Ida Pro 软件安装 jadx和Ida的安装使用都很简单，此处不做介绍，安装Android studio过程需要确保有正常的网络环境，网络配置不做介绍   插件安装 Chinese (Simplified) Language Pack &#x2F; 中文语言包 - I">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-10-11T06:08:28.000Z">
-<meta property="article:modified_time" content="2023-10-11T06:08:28.113Z">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-08-30-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-20-26-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-22-03-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-25-31-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-28-14-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-29-30-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-30-49-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-33-43-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-34-24-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-35-02-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-50-32-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-43-05-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-44-19-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-47-07-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-49-22-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-55-00-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-55-55-image.png">
+<meta property="article:published_time" content="2023-10-02T09:54:12.000Z">
+<meta property="article:modified_time" content="2023-10-16T09:55:25.265Z">
 <meta property="article:author" content="noxke">
 <meta property="article:tag" content="Reverse Engineering">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/2023-10-06-01-08-30-image.png">
   
   
   
-  <title>hello re - NOXKE</title>
+  <title>移动端调试环境搭建 - NOXKE</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -55,12 +73,12 @@
 <link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
 
 
-<link  rel="stylesheet" href="/css/main.css" />
+<link  rel="stylesheet" href="../../../../../css/main.css" />
 
 
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
   
 
 
@@ -76,8 +94,8 @@
       Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
     }
   </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
   
 
 
@@ -94,7 +112,7 @@
 <div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="../../../../../index.html">
       <strong>noxke&#39;s blog</strong>
     </a>
 
@@ -113,7 +131,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/">
+              <a class="nav-link" href="../../../../../index.html">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -125,7 +143,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/archives/">
+              <a class="nav-link" href="../../../../../archives/">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
               </a>
@@ -137,7 +155,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/categories/">
+              <a class="nav-link" href="../../../../../categories/">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
@@ -149,7 +167,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/tags/">
+              <a class="nav-link" href="../../../../../tags/">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
               </a>
@@ -161,7 +179,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/about/">
+              <a class="nav-link" href="../../../../../about/">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
               </a>
@@ -191,13 +209,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="hello re"></span>
+            <span id="subtitle" data-typed-text="移动端调试环境搭建"></span>
           
         </div>
 
@@ -208,8 +226,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-10-11 14:08" pubdate>
-          2023年10月11日 下午
+        <time datetime="2023-10-02 17:54" pubdate>
+          2023年10月2日 下午
         </time>
       </span>
     
@@ -220,7 +238,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          1.6k 字
         
       </span>
     
@@ -231,7 +249,7 @@
         
         
         
-          1 分钟
+          14 分钟
         
       </span>
     
@@ -268,18 +286,114 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">hello re</h1>
+            <h1 id="seo-header">移动端调试环境搭建</h1>
             
             
               <div class="markdown-body">
                 
-                
+                <p>本篇将介绍安卓软件Java层和Native层调试工具的安装和简单使用</p>
+<p>涉及到的软件如下</p>
+<p><a target="_blank" rel="noopener" href="https://developer.android.google.cn/studio?hl=zh-cn">Android studio</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/skylot/jadx">jadx</a></p>
+<p><a target="_blank" rel="noopener" href="https://hex-rays.com/IDA-pro/">Ida Pro</a></p>
+<h4 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h4><blockquote>
+<p>jadx和Ida的安装使用都很简单，此处不做介绍，安装Android studio过程需要确保有正常的网络环境，网络配置不做介绍</p>
+</blockquote>
+<ol>
+<li><p>插件安装</p>
+<p><a target="_blank" rel="noopener" href="https://plugins.jetbrains.com/plugin/13710-chinese-simplified-language-pack----/versions#tabs">Chinese (Simplified) Language Pack &#x2F; 中文语言包 - IntelliJ IDEs Plugin | Marketplace</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/JesusFreke/smalidea">GitHub - JesusFreke&#x2F;smalidea: smalidea is a smali language plugin for IntelliJ IDEA</a></p>
+</li>
+<li><p>SDK安装</p>
+<p>打开SDK Manager，修改sdk目录，安装如下SDK工具</p>
+<p><img src="2023-10-06-01-08-30-image.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>添加环境变量</p>
+<p>将<code>$sdkPath/platform-tools/</code></p>
+<p><code>$sdkPath//opt/android-studio-sdk/ndk/26.0.10792818/toolchains/llvm/prebuilt/linux-x86_64/bin/</code>添加到环境变量，ndk变量需要根据自己的环境情况进行添加</p>
+</li>
+<li><p>创建Android Virtual Device(AVD)虚拟机</p>
+<p>打开Virtual Device Manager</p>
+<p>选择创建，按照个人习惯，机型选择<code>Pixel XL</code>，镜像选择<code>Oreo</code>(API27 x86 Android 8.1)，如果是64位环境，选择<code>Tiramisu</code>(API33 x86_64 Android 13.0)</p>
+</li>
+</ol>
+<p>   将Device Frame的勾取消，点击完成即可创建</p>
+<h4 id="Android-Studio调试"><a href="#Android-Studio调试" class="headerlink" title="Android Studio调试"></a>Android Studio调试</h4><p>选择右图<code>Profile or Debug APK</code></p>
+<p><img src="2023-10-06-01-20-26-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>有可能打开后和左图一样，没有<code>Profile or Debug APK</code>选项，如果出现该情况，进入到插件设置，启用Android APK Support和Android NDK Support并重启Android Studio</p>
+<img src="2023-10-06-01-22-03-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="573">
+
+<p>选择<code>Profile or Debug APK</code>后，选中需要调试的apk文件</p>
+<p><img src="2023-10-06-01-25-31-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>左侧选择java并找到要调试的类，打开编译后的smali代码，对smali代码不了解的可以使用jadx工具对照查看反编译的java代码</p>
+<p><img src="2023-10-06-01-28-14-image.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>虽然jadx也可以进行动态调试，但不推荐，很多情况下无法看到寄存器的值</p>
+</blockquote>
+<p>选择调试的AVD虚拟机并编辑调试配置文件</p>
+<p><img src="2023-10-06-01-29-30-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>将Debuger类型修改为Java Only，不修改的情况下会默认附加lldb调试器，导致ida调试器无法附加</p>
+<img src="2023-10-06-01-30-49-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="523">
+
+<p>在Device Manager中启动AVD虚拟机</p>
+<p><img src="2023-10-06-01-33-43-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>下断点并点击调试</p>
+<p><img src="2023-10-06-01-34-24-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="2023-10-06-01-35-02-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>正常情况下程序会断下并进入调试状态，但有时会出现无法调试的情况，如果发生该情况，到插件管理禁用Android APK Support和Android NDK Support(可不进行重启)</p>
+<p>剩下的调试部分不做介绍</p>
+<h4 id="Ida调试"><a href="#Ida调试" class="headerlink" title="Ida调试"></a>Ida调试</h4><p>确保上述操作AVD虚拟机启动和软件进入调试状态</p>
+<p>提取程序的lib文件(使用unzip解压apk文件，在lib目录中找到对于处理器架构的so文件)</p>
+<p>将Ida的dbgsrv目录下的对应架构的调试服务器上传到AVD虚拟机中，例如本题为<code>android_x86_server</code>，开启29346端口转发(开启转发失败时去掉-s选项)</p>
+<p><img src="2023-10-06-01-50-32-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>adb shell进入到AVD虚拟机的命令行，su切换到root权限，进入dbgsrv目录</p>
+<p><img src="2023-10-06-01-43-05-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>为<code>android_x86_server</code>添加可执行权限并运行</p>
+<p><img src="2023-10-06-01-44-19-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>启动ida32并选择要调试的so文件(不建议修改文件名)</p>
+<p>找到需要调试的函数下断点</p>
+<p>选择调试器为<code>Remote Linux debugger</code></p>
+<p><img src="2023-10-06-01-47-07-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>Debugger-&gt;Process Option设置Hostname为<code>127.0.0.1</code></p>
+<img src="2023-10-06-01-49-22-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="500">
+
+<p>Debugger-&gt;Attach to process选择要调试的进程</p>
+<img src="2023-10-06-01-55-00-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="500">
+
+<p>出现询问模块名相同选择<code>Same</code></p>
+<img src="2023-10-06-01-55-55-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="507">
+
+<p>Ida附加后会自动断下，按F9运行一次</p>
+<p>回到Android Studio单步执行native函数，Ida会在断点处断下</p>
+<p>剩下的调试部分不做介绍</p>
+
                 
               </div>
             
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
 </div>
@@ -290,8 +404,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>hello re</div>
-      <div>https://blog.noxke.icu/2023/10/11/hello-re/</div>
+      <div>移动端调试环境搭建</div>
+      <div>https://blog.noxke.icu/2023/10/02/TencentGameClient/移动端调试环境搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -303,7 +417,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年10月11日</div>
+          <div>2023年10月2日</div>
         </div>
       
       
@@ -335,9 +449,21 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="../../../09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/" title="游戏客户端开发基础-移动篇">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">游戏客户端开发基础-移动篇</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="../%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/" title="游戏客户端开发基础-移动篇(视频习题)">
+                        <span class="hidden-mobile">游戏客户端开发基础-移动篇(视频习题)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
@@ -464,8 +590,8 @@
 
 <script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
 <script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
 
 
   <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
@@ -487,7 +613,7 @@
 
 
   
-    <script  src="/js/img-lazyload.js" ></script>
+    <script  src="../../../../../js/img-lazyload.js" ></script>
   
 
 
@@ -586,7 +712,7 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
-  <script  src="/js/local-search.js" ></script>
+  <script  src="../../../../../js/local-search.js" ></script>
 
 
 
@@ -594,7 +720,7 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
+<script  src="../../../../../js/boot.js" ></script>
 
 
   

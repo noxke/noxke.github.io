@@ -86,7 +86,7 @@
 <div class="header-inner" style="height: 100vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="index.html">
       <strong>noxke&#39;s blog</strong>
     </a>
 
@@ -105,7 +105,7 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/">
+              <a class="nav-link" href="index.html">
                 <i class="iconfont icon-home-fill"></i>
                 <span>首页</span>
               </a>
@@ -227,15 +227,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2023/10/11/hello-re/" target="_self">
-          hello re
+        <a href="2023/10/16/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%84%B1%E5%A3%B3%E5%88%86%E6%9E%90/" target="_self">
+          移动端脱壳分析
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/10/11/hello-re/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="2023/10/16/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%84%B1%E5%A3%B3%E5%88%86%E6%9E%90/" target="_self">
         <div>
-          
+          DUMP脱壳拿到附件先file一下  arm平台的ELF文件，因此运行和调试使用手机进行（不需要root） ida32打开CrackMe2，进行静态分析   ida只识别出了几个函数，一眼壳，Shift+F12查看字符串，upx加壳   下载upx尝试使用upx -d脱壳   脱不下来，猜测upx特征被隐藏了，因此进行手动脱壳 先将CrackMe2push到手机，运行测试   程序在等待输入状态，
         </div>
       </a>
 
@@ -243,11 +243,281 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2023-10-11 14:08" pubdate>
-              2023-10-11
+            <time datetime="2023-10-16 00:50" pubdate>
+              2023-10-16
             </time>
           </div>
         
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="2023/10/12/reverse_core/01%E5%85%B3%E4%BA%8E%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" target="_self">
+          01关于逆向工程
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="2023/10/12/reverse_core/01%E5%85%B3%E4%BA%8E%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" target="_self">
+        <div>
+          逆向工程核心原理一书非常适合逆向初学者进行学习，该书以Windows x86为平台，详细介绍了逆向中的调试分析技巧 本系列文章将对书籍中的内容进行记录  逆向工程常用分析方法 静态分析 在不执行代码文件的情形下，对大妈进行静态分析，观察代码文件的外部特征，通常会查看文件的类型、大小、PE头信息、导入导出表、字符串等信息。此外还会使用反汇编和反编译工具查看内部代码、分析代码结构。  动态分析 动态
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-10-12 10:35" pubdate>
+              2023-10-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E4%BA%8C%E5%91%A8%E7%9B%AE/" class="category-chain-item">逆向工程核心原理二周目</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/" target="_self">
+          游戏客户端开发基础-移动篇
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="2023/10/09/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87/" target="_self">
+        <div>
+          GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.Java层分析使用jadx打开题目apk，查看AndroidManifest.xml获取程序入口Activity为com.example.crackme1.MainActivity 查看反编译的MainActivity类的onCreate方法，分析Java
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-10-09 11:29" pubdate>
+              2023-10-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_self">
+          移动端调试环境搭建
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="2023/10/02/TencentGameClient/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_self">
+        <div>
+          本篇将介绍安卓软件Java层和Native层调试工具的安装和简单使用 涉及到的软件如下 Android studio jadx Ida Pro 软件安装 jadx和Ida的安装使用都很简单，此处不做介绍，安装Android studio过程需要确保有正常的网络环境，网络配置不做介绍   插件安装 Chinese (Simplified) Language Pack &#x2F; 中文语言包 - I
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-10-02 17:54" pubdate>
+              2023-10-02
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/" target="_self">
+          游戏客户端开发基础-移动篇(视频习题)
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="2023/10/02/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-%E7%A7%BB%E5%8A%A8%E7%AF%87(%E8%A7%86%E9%A2%91%E4%B9%A0%E9%A2%98)/" target="_self">
+        <div>
+          GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.静态分析Java层使用jadx打开题目gslab.demo.apk文件，查看AndroidManifest.xml文件获取软件入口activity为com.example.x86demo.MainActivity 查看该入口activity类的onCrea
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-10-02 13:13" pubdate>
+              2023-10-02
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="2023/09/26/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-PC%E7%AF%87/" target="_self">
+          游戏客户端开发基础-PC篇
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="2023/09/26/TencentGameClient/%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80-PC%E7%AF%87/" target="_self">
+        <div>
+          GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 1.程序分析使用ida打开crackme.exe，进入到程序的主逻辑函数，注意到有大量的xmm寄存器，但是不含call指令，先忽略，注意到两个特殊部分：  左图中调用了CreateThread函数创建子线程运行StartAddress处函数，右侧含有分支判断，
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-09-26 10:27" pubdate>
+              2023-09-26
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
         
         
       </div>
