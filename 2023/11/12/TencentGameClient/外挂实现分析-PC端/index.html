@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 游戏分析使用工具如下:  dnSpy v6.1.8 Cheat Engine 7.5 BepInEx 5.4.22 BepInEx.ConfigurationManager v18.0.1 UnityExplorer 4.9.0 Unity 脚本 API  游">
+<meta property="og:type" content="article">
+<meta property="og:title" content="外挂实现分析-PC端">
+<meta property="og:url" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 游戏分析使用工具如下:  dnSpy v6.1.8 Cheat Engine 7.5 BepInEx 5.4.22 BepInEx.ConfigurationManager v18.0.1 UnityExplorer 4.9.0 Unity 脚本 API  游">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-14-42-36-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-15-10-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-23-26-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-38-32-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-39-02-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-39-31-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-39-57-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-47-50-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-48-36-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-50-18-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-50-41-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-52-41-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-53-08-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-54-40-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-59-08-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-15-59-27-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-16-15-38-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-16-36-00-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-17-01-16-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-19-37-06-%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA.gif">
+<meta property="article:published_time" content="2023-11-12T02:05:00.000Z">
+<meta property="article:modified_time" content="2023-11-12T02:08:41.748Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="Reverse Engineering">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/assets/2023-10-27-14-42-36-image.png">
+  
+  
+  
+  <title>外挂实现分析-PC端 - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="外挂实现分析-PC端"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-12 10:05" pubdate>
+          2023年11月12日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          124 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">外挂实现分析-PC端</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><a target="_blank" rel="noopener" href="https://github.com/noxke/TencentGameClientOpenCourse">GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班</a></p>
+<h3 id="游戏分析"><a href="#游戏分析" class="headerlink" title="游戏分析"></a>游戏分析</h3><p>使用工具如下:</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/dnSpy/dnSpy">dnSpy v6.1.8</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/cheat-engine/cheat-engine">Cheat Engine 7.5</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BepInEx/BepInEx">BepInEx 5.4.22</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/BepInEx/BepInEx.ConfigurationManager">BepInEx.ConfigurationManager v18.0.1</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/sinai-dev/UnityExplorer">UnityExplorer 4.9.0</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.unity.cn/cn/2019.4/ScriptReference/index.html">Unity 脚本 API</a></p>
+</blockquote>
+<p>游戏使用Unity Mono实现，主要游戏逻辑在<code>./FlappyBird_Data/Managed/Assembly-CSharp.dll</code>文件中，使用C#语言编写</p>
+<p>使用dnSpy加载游戏的程序集文件<code>Assembly-CSharp.dll</code></p>
+<img title="" src="assets/2023-10-27-14-42-36-image.png" srcset="/img/loading.gif" lazyload alt="" data-align="center" width="288">
+
+<p>根据类名可以知道每个类的主要功能，与小鸟有关的功能实现在<code>BirdScripts</code>类中，有关于游戏控制的实现在<code>GameControllers</code>类和<code>GamePlayController</code>类中</p>
+<p>首先分析<code>BirdScripts</code>类</p>
+<p><code>BirdScripts</code>类派生自<code>MonoBehaviour</code>，其中的<code>Awake</code>方法在加载实例时调用</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Awake</span>()</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (BirdScripts.instance == <span class="hljs-literal">null</span>)<br>    &#123;<br>        BirdScripts.instance = <span class="hljs-keyword">this</span>;<br>    &#125;<br>    <span class="hljs-keyword">this</span>.isAlive = <span class="hljs-literal">true</span>;<br>    <span class="hljs-keyword">this</span>.score = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">this</span>.flapButton = GameObject.FindGameObjectWithTag(<span class="hljs-string">&quot;FlapButton&quot;</span>).GetComponent&lt;Button&gt;();<br>    <span class="hljs-keyword">this</span>.flapButton.onClick.AddListener(<span class="hljs-built_in">delegate</span>()<br>    &#123;<br>        <span class="hljs-keyword">this</span>.flapTheBird();<br>    &#125;);<br>    <span class="hljs-keyword">this</span>.CameraX();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该方法主要是对小鸟的初始化，设置小鸟存活状态为true，设置分数0，绑定按钮事件等</p>
+<p><code>FixUpdate</code>用于物理计算，循环调用</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">FixedUpdate</span>()</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.isAlive)<br>    &#123;<br>        Vector3 position = <span class="hljs-keyword">base</span>.transform.position;<br>        position.x += <span class="hljs-keyword">this</span>.forwardSpeed * Time.deltaTime;<br>        <span class="hljs-keyword">base</span>.transform.position = position;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.didFlap)<br>        &#123;<br>            <span class="hljs-keyword">this</span>.didFlap = <span class="hljs-literal">false</span>;<br>            <span class="hljs-keyword">this</span>.myRigidBody.velocity = <span class="hljs-keyword">new</span> Vector2(<span class="hljs-number">0f</span>, <span class="hljs-keyword">this</span>.bounceSpeed);<br>            <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.flapClick);<br>            <span class="hljs-keyword">this</span>.anim.SetTrigger(<span class="hljs-string">&quot;Flap&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.myRigidBody.velocity.y &gt;= <span class="hljs-number">0f</span>)<br>        &#123;<br>            <span class="hljs-keyword">base</span>.transform.rotation = Quaternion.Euler(<span class="hljs-number">0f</span>, <span class="hljs-number">0f</span>, <span class="hljs-number">0f</span>);<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            <span class="hljs-built_in">float</span> z = Mathf.Lerp(<span class="hljs-number">0f</span>, <span class="hljs-number">-70f</span>, -<span class="hljs-keyword">this</span>.myRigidBody.velocity.y / <span class="hljs-number">7f</span>);<br>            <span class="hljs-keyword">base</span>.transform.rotation = Quaternion.Euler(<span class="hljs-number">0f</span>, <span class="hljs-number">0f</span>, z);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>主要逻辑是移动小鸟坐标，执行flap操作后为小鸟设置y方向上的速度向量，播放音乐，播放动画，当y方向上速度向量为0时小鸟不旋转，当y方向上速度向量小于0时小鸟绕z轴旋转</p>
+<p>另外两个重要方法分别是<code>OnCollisionEnter2D</code>而<code>OnTriggerEnter2D</code></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnCollisionEnter2D</span>(<span class="hljs-params">Collision2D target</span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (target.gameObject.tag == <span class="hljs-string">&quot;Pipe&quot;</span> || target.gameObject.tag == <span class="hljs-string">&quot;Ground&quot;</span> || target.gameObject.tag == <span class="hljs-string">&quot;Enemy&quot;</span>)<br>    &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.isAlive)<br>        &#123;<br>            <span class="hljs-keyword">this</span>.isAlive = <span class="hljs-literal">false</span>;<br>            <span class="hljs-keyword">this</span>.anim.SetTrigger(<span class="hljs-string">&quot;BirdDied&quot;</span>);<br>            <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.diedClip);<br>            GamePlayController.instance.playerDiedShowScore(<span class="hljs-keyword">this</span>.score);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (target.gameObject.tag == <span class="hljs-string">&quot;Flag&quot;</span> &amp;&amp; <span class="hljs-keyword">this</span>.isAlive)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.isAlive = <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.cheerClip);<br>        GamePlayController.instance.finishGame();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当小鸟刚体碰撞时调用<code>OnCollisionEnter2D</code>方法，发生碰撞后，根据目标的标签判断游戏失败或游戏胜利</p>
+<p>当碰撞的物体为管道<code>Pipe</code>、地面<code>Ground</code>或敌人<code>Enemy</code>时，设置小鸟死亡，播放音乐，勃发动画，显示死亡分数等；当碰撞物体为棋子<code>Flag</code>时，游戏胜利</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnTriggerEnter2D</span>(<span class="hljs-params">Collider2D target</span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (target.tag == <span class="hljs-string">&quot;PipeHolder&quot;</span>)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.pointClip);<br>        <span class="hljs-keyword">this</span>.score++;<br>        GamePlayController.instance.setScore(<span class="hljs-keyword">this</span>.score);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当小鸟进入附加到该对象的触发碰撞体时调用<code>OnTriggerEnter2D</code>方法，该方法判断小鸟是否进入管道间隙<code>PipeHolder</code>，进入到管道间隙时分数加一，更新排名显示的分数</p>
+<p><code>instance</code>成员保存当前的小鸟实例</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> BirdScripts instance;<br></code></pre></td></tr></table></figure>
+
+<p><code>myRigidBody</code>成员保存当前小鸟的刚体物理组件</p>
+<h3 id="游戏破解"><a href="#游戏破解" class="headerlink" title="游戏破解"></a>游戏破解</h3><ul>
+<li><h4 id="修改和重新编译C-程序集实现"><a href="#修改和重新编译C-程序集实现" class="headerlink" title="修改和重新编译C#程序集实现"></a>修改和重新编译C#程序集实现</h4></li>
+</ul>
+<p>根据上述分析可以了解，<code>OnCollisionEnter2D</code>内实现小鸟的碰撞检测，删除该方法内触发小鸟死亡的分支，可实现无敌效果，<code>OnTriggerEnter2D</code>内实现分数计算，修改该方法，可实增加游戏分数的效果</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnCollisionEnter2D</span>(<span class="hljs-params">Collision2D target</span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (target.gameObject.tag == <span class="hljs-string">&quot;Flag&quot;</span> &amp;&amp; <span class="hljs-keyword">this</span>.isAlive)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.isAlive = <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.cheerClip);<br>        GamePlayController.instance.finishGame();<br>    &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnTriggerEnter2D</span>(<span class="hljs-params">Collider2D target</span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (target.tag == <span class="hljs-string">&quot;PipeHolder&quot;</span>)<br>    &#123;<br>        <span class="hljs-keyword">this</span>.audioSource.PlayOneShot(<span class="hljs-keyword">this</span>.pointClip);<br>        <span class="hljs-keyword">this</span>.score += <span class="hljs-number">233</span>;<br>        GamePlayController.instance.setScore(<span class="hljs-keyword">this</span>.score);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>dnSpy修改方法并重新编译，替换原<code>Assembly-CSharp.dll</code>程序集，运行游戏测试</p>
+<p><img src="assets/2023-10-27-15-15-10-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>无敌功能和分数修改功能已实现</p>
+<ul>
+<li><h4 id="Cheat-Engine动态修改实现"><a href="#Cheat-Engine动态修改实现" class="headerlink" title="Cheat Engine动态修改实现"></a>Cheat Engine动态修改实现</h4></li>
+</ul>
+<p>开始游戏，暂停后使用CE打开游戏进程，选择<code>Mono-&gt;.Net Info</code>查看进程加载的模块信息，选择<code>Assembly-CSharp-&gt;BirdScript</code>模块</p>
+<p><img src="assets/2023-10-27-15-23-26-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><code>instance</code>为当前的小鸟实例，可以查看当前小鸟实例的成员属性和方法</p>
+<p>可以查看和修改<code>OnCollisionEnter2D</code>和<code>OnTriggerEnter2D</code>的JIT代码</p>
+<p>先分析<code>OnCollisionEnter2D</code>的JIT代码，主要分析跳转指令</p>
+<p><img src="assets/2023-10-27-15-38-32-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-39-02-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-39-31-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-39-57-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>根据之前的源代码可以轻松分析处这部分调整是判断小鸟是否碰撞到会死亡的物体，当或语句中有任意一条成立时，跳转到<code>0x121</code>行执行，如果或语句中3条判断都不成立，跳转到<code>0x1a4</code>行，进入到<code>0x121</code>行后，会判断小鸟的<code>isAlive</code>是否为<code>false</code>，为<code>false</code>跳转到<code>0x255</code>行退出调用，否则执行后续代码</p>
+<p>另一个判断是否碰撞到棋子的分支类似</p>
+<p>将第<code>0x127</code>行分支修改为强制跳转，不执行后续代码，即可绕过小鸟死亡代码的执行</p>
+<p><img src="assets/2023-10-27-15-47-50-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>回到游戏进行测试</p>
+<p><img src="assets/2023-10-27-15-48-36-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>小鸟的无敌效果已经实现</p>
+<p>查看<code>OnTriggerEnter2D</code>方法的JIT代码</p>
+<p><img src="assets/2023-10-27-15-50-18-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-50-41-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>很明显，<code>0x4a</code>行判断是否进入到管道间隙，中间的代码为修改分数的部分</p>
+<p><img src="assets/2023-10-27-15-52-41-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-53-08-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>将<code>0x77</code>行inc指令修改为dec指令，使小鸟进入管道间隙分数减1</p>
+<p>回到游戏进行测试</p>
+<p><img src="assets/2023-10-27-15-54-40-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>分数减为复数</p>
+<p>也可以通过修改小鸟实例下的<code>score</code>实现分数修改</p>
+<p><img src="assets/2023-10-27-15-59-08-image.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="assets/2023-10-27-15-59-27-image.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li><h4 id="UnityExplorer动态分析游戏"><a href="#UnityExplorer动态分析游戏" class="headerlink" title="UnityExplorer动态分析游戏"></a>UnityExplorer动态分析游戏</h4></li>
+</ul>
+<blockquote>
+<p>UnityExplorer可以使用BepInEx、MelonLoader和Standalone三种加载方式加载，测试发现BepInEx的效率要高一点，比MelonLoader加载要流畅很多，而且BepInEx的文档更完善，方便插件的开发，因此后续使用BepInEx加载UnityExplorer进行分析，同时安装ConfigurationManager便于插件的管理和配置</p>
+</blockquote>
+<p>BepInEx和UnityExplorer的安装在仓库Readme中都很详细，注意版本即可，此处选择的是BepInEx 5.4.22版本，安装后启用<code>Logging.Console</code>设置，方便查看日志信息</p>
+<p><img src="assets/2023-10-27-16-15-38-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>在UnityExplorer中能看到小鸟的位置信息和加载的组件信息，主要关注<code>RigidBody2D</code>组件和<code>CircleCollider2D</code>组件</p>
+<p><code>RigidBody2D</code>组件是小鸟的刚体组件信息，<code>gravityScale</code>变量是刚体受重力的影响程度，将其修改为0可实现不受重力影响，实现漂浮效果，但需要同时将速度向量<code>velocity</code>变量修改为0，避免小鸟持续向上或向下飞行，还需要将小鸟的<code>bounceSpeed</code>修改为0，避免手贱点到屏幕让小鸟增加y方向的速度</p>
+<p><code>CircleCollider2D</code>是小鸟的碰撞组件信息，将<code>enable</code>修改为false可关闭小鸟的碰撞</p>
+<p><img src="assets/2023-10-27-16-36-00-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>修改后就实现了小鸟的悬浮飞行和穿墙效果，但是由于禁用了碰撞组件，因此不会检测与管道间隙的碰撞，分数不会增加，接触棋子也不会结束游戏，想要保存穿墙效果的同时能够增加分数，可以将所有管道、敌人的碰撞组件禁用</p>
+<ul>
+<li><h4 id="BepInEx实现游戏插件"><a href="#BepInEx实现游戏插件" class="headerlink" title="BepInEx实现游戏插件"></a>BepInEx实现游戏插件</h4></li>
+</ul>
+<p>上述的修改方法中，除了修改程序集重新编译，另外两种均为手动修改，而且重新加载游戏后修改会失效，并且实现的功能有限，因此后续选择编写程序集的方法进行游戏破解</p>
+<p>课堂视频中已经展示了使用<code>SharpMonoInjector</code>工具注入程序集实现破解功能，但是仍然需要手动注入，<del>不够优雅</del>，因此这里选择用BepInEx插件的形式实现</p>
+<p>插件开发文档：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://docs.bepinex.dev/articles/dev_guide/plugin_tutorial/index.html">https://docs.bepinex.dev/articles/dev_guide/plugin_tutorial/index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://mod.3dmgame.com/read/3">从0开始教你使用BepInEx为unity游戏制作插件Mod - 3DM Mod站</a></p>
+</blockquote>
+<p><del>没写过C#代码，代码可能不够规范</del></p>
+<p><code>Plugin.cs</code>是插件的入口类代码，<code>Plugin</code>类派生自<code>BaseUnityPlugin</code></p>
+<p><code>GlobalVariables.cs</code>是代码使用的全局变量类，主要保存插件的配置信息已经从游戏内获取的对象信息</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title">GlobalVariables</span><br>&#123;<br>    <span class="hljs-comment">// 全局变量</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> BirdScripts birdInstances; <span class="hljs-comment">// 当前小鸟实例</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Rigidbody2D birdRigidbody2D; <span class="hljs-comment">// 小鸟的Rigidbody2D组件</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Collider2D birdCollider2D; <span class="hljs-comment">// 小鸟的Collider2D组件</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GameObject[] pipes; <span class="hljs-comment">// 管道</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GameObject[] pipeHolders; <span class="hljs-comment">// 管道间隙</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GameObject[] enemies; <span class="hljs-comment">// 敌人</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> GameObject[] flags; <span class="hljs-comment">// flag</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConfigEntry&lt;<span class="hljs-built_in">bool</span>&gt; invincible; <span class="hljs-comment">// 无敌</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConfigEntry&lt;<span class="hljs-built_in">bool</span>&gt; collision; <span class="hljs-comment">// 碰撞</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConfigEntry&lt;<span class="hljs-built_in">bool</span>&gt; fly; <span class="hljs-comment">// 飞行</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConfigEntry&lt;<span class="hljs-built_in">float</span>&gt; speed; <span class="hljs-comment">// 游戏速度</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConfigEntry&lt;<span class="hljs-built_in">int</span>&gt; score; <span class="hljs-comment">// 分数</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Cheat.cs</code>是插件作弊功能的核心实现</p>
+<p>下面依次进行分析</p>
+<p>与<code>MonoBehaviour</code>类似，<code>BaseUnityPlugin</code>中的<code>Awake</code>方法在类实例加载时执行，该方法内用于绑定插件的设置，便于在ConfigurationManager插件中图形化地修改参数配置</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Awake</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 插件启用时调用</span><br>    Logger.LogInfo(<span class="hljs-string">$&quot;Plugin <span class="hljs-subst">&#123;PluginInfo.PLUGIN_NAME&#125;</span> is loaded!&quot;</span>);<br>    <span class="hljs-comment">// 创建配置项</span><br>    GlobalVariables.invincible = Config.Bind(<span class="hljs-string">&quot;Config&quot;</span>, <span class="hljs-string">&quot;invincible&quot;</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">&quot;碰撞无敌&quot;</span>);<br>    GlobalVariables.invincible.Value = <span class="hljs-literal">false</span>;<br>    GlobalVariables.collision = Config.Bind(<span class="hljs-string">&quot;Config&quot;</span>, <span class="hljs-string">&quot;collision&quot;</span>, <span class="hljs-literal">true</span>, <span class="hljs-string">&quot;开启碰撞&quot;</span>);<br>    GlobalVariables.collision.Value = <span class="hljs-literal">true</span>;<br>    GlobalVariables.fly = Config.Bind(<span class="hljs-string">&quot;Config&quot;</span>, <span class="hljs-string">&quot;fly&quot;</span>, <span class="hljs-literal">false</span>, <span class="hljs-string">&quot;开启飞行&quot;</span>);<br>    GlobalVariables.fly.Value = <span class="hljs-literal">false</span>;<br>    GlobalVariables.score = Config.Bind(<span class="hljs-string">&quot;Config&quot;</span>, <span class="hljs-string">&quot;score&quot;</span>, <span class="hljs-number">0</span>, <span class="hljs-string">&quot;游戏分数&quot;</span>);<br>    GlobalVariables.score.Value = <span class="hljs-number">0</span>;<br>    GlobalVariables.speed = Config.Bind(<span class="hljs-string">&quot;Config&quot;</span>, <span class="hljs-string">&quot;speed&quot;</span>, <span class="hljs-number">3f</span>, <span class="hljs-string">&quot;移动速度&quot;</span>);<br>    GlobalVariables.speed.Value = <span class="hljs-number">3f</span>;<br>    <span class="hljs-comment">// 关闭碰撞的回调函数</span><br>    GlobalVariables.collision.SettingChanged += (sender, args) =&gt; Cheat.instance.SetCollision(GlobalVariables.collision.Value);<br>    <span class="hljs-comment">// 飞行回调函数</span><br>    GlobalVariables.fly.SettingChanged += (sender, args) =&gt; Cheat.instance.SetFly(GlobalVariables.fly.Value);<br>    <span class="hljs-comment">// 修改分数的回调函数</span><br>    GlobalVariables.score.SettingChanged += (sender, args) =&gt; Cheat.instance.SetScore(GlobalVariables.score.Value);<br>    <span class="hljs-comment">// 修改游戏速度的回调函数</span><br>    GlobalVariables.speed.SettingChanged += (sender, args) =&gt; Cheat.instance.SetSpeed(GlobalVariables.speed.Value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Start</code>方法在所有插件加载后调用，此处用于实例化<code>Cheat</code>类对象</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Start</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 所有插件全部加载后调用</span><br>    Logger.LogInfo(<span class="hljs-string">$&quot;Plugin <span class="hljs-subst">&#123;PluginInfo.PLUGIN_NAME&#125;</span> is started!&quot;</span>);<br>    Cheat.instance = <span class="hljs-keyword">new</span> Cheat();<br>    Cheat.instance.Start();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Update</code>方法会在游戏的每一帧调用，循环执行，此处用于调用<code>Cheat</code>类的<code>Update</code>方法</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Update</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 持续执行</span><br>    <span class="hljs-comment">// Debug.Log($&quot;Plugin &#123;PluginInfo.PLUGIN_NAME&#125; is Update!&quot;);</span><br>    Cheat.instance.Update();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>OnGUI</code>方法用于在屏幕上显示标签，并显示当前开启的作弊功能</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnGUI</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 在游戏界面上显示标签</span><br>    GUI.skin.label.fontSize = <span class="hljs-number">18</span>;<br>    GUI.skin.label.normal.textColor = Color.blue;<br>    <span class="hljs-built_in">string</span> labelText = <span class="hljs-string">&quot;FlappyBird Cheat Plugin\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;written by noxke\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;[F1] : config and more feature\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;[ESC] : pause\n&quot;</span>;<br>    labelText += <span class="hljs-string">$&quot;[1/2] invincible [<span class="hljs-subst">&#123;GlobalVariables.invincible.Value&#125;</span>]\n&quot;</span>;<br>    labelText += <span class="hljs-string">$&quot;[3/4] : collision [<span class="hljs-subst">&#123;GlobalVariables.collision.Value&#125;</span>]\n&quot;</span>;<br>    labelText += <span class="hljs-string">$&quot;[5/6] : fly [<span class="hljs-subst">&#123;GlobalVariables.fly.Value&#125;</span>]\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;[9] : add score\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;[up/down/left/right] : move\n&quot;</span>;<br>    labelText += <span class="hljs-string">&quot;[0] : finish game\n&quot;</span>;<br>    labelText += <span class="hljs-string">$&quot;speed [<span class="hljs-subst">&#123;GlobalVariables.speed.Value&#125;</span>]&quot;</span>;<br>    GUI.Label(<span class="hljs-keyword">new</span> Rect(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>, <span class="hljs-number">400</span>, <span class="hljs-number">300</span>), labelText);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<img title="" src="assets/2023-10-27-17-01-16-image.png" srcset="/img/loading.gif" lazyload alt="" width="190">
+
+<p><code>Cheat</code>类为作弊功能的实现</p>
+<p>类加载时调用<code>Start</code>方法，进而调用<code>SetPatch</code>方法</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetPatch</span>()</span><br><span class="hljs-function"><span class="hljs-comment">// 设置勾取函数</span></span><br>&#123;<br>    <span class="hljs-comment">// patch OnCollisionEnter2D方法</span><br>    Harmony harmony1 = <span class="hljs-keyword">new</span> Harmony(<span class="hljs-string">&quot;com.noxke.patch1&quot;</span>);<br>    MethodInfo onCollisionEnter2D = AccessTools.Method(<span class="hljs-keyword">typeof</span>(BirdScripts), <span class="hljs-string">&quot;OnCollisionEnter2D&quot;</span>);<br>    harmony1.Patch(onCollisionEnter2D, prefix: <span class="hljs-keyword">new</span> HarmonyMethod(<span class="hljs-keyword">typeof</span>(Cheat).GetMethod(<span class="hljs-string">&quot;PrefixOnCollisionEnter2D&quot;</span>)));<br>    Debug.Log(<span class="hljs-string">&quot;Patch OnCollisionEnter2D&quot;</span>);<br><br>    <span class="hljs-comment">// patch flapTheBird方法</span><br>    Harmony harmony2 = <span class="hljs-keyword">new</span> Harmony(<span class="hljs-string">&quot;com.noxke.patch2&quot;</span>);<br>    MethodInfo flapTheBird = AccessTools.Method(<span class="hljs-keyword">typeof</span>(BirdScripts), <span class="hljs-string">&quot;flapTheBird&quot;</span>);<br>    harmony2.Patch(flapTheBird, prefix: <span class="hljs-keyword">new</span> HarmonyMethod(<span class="hljs-keyword">typeof</span>(Cheat).GetMethod(<span class="hljs-string">&quot;PrefixFlapTheBird&quot;</span>)));<br>    Debug.Log(<span class="hljs-string">&quot;Patch flapTheBird&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>SetPatch</code>方法内利用<code>Harmony</code>提供的<code>Patch</code>功能勾取<code>BirdScripts</code>类的<code>OnCollisionEnter2D</code>方法和<code>flapTheBird</code>方法，由于<code>OnCollisionEnter2D</code>是<code>private</code>方法，需要使用反射的方法设置Patch</p>
+<p>在<code>OnCollisionEnter2D</code>方法被调用前执行<code>Cheat</code>类的<code>PrefixOnCollisionEnter2D</code>方法，判断发生碰撞的是否为管道、大地或者敌人，如果是，则跳过屏蔽<code>OnCollisionEnter2D</code>方法的执行，屏蔽小鸟的死亡，如果为其他情况，即碰到棋子，则会执行原方法，触发游戏胜利</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">PrefixOnCollisionEnter2D</span>(<span class="hljs-params">BirdScripts __instance, Collision2D target</span>)</span><br>&#123;<br>    <span class="hljs-comment">// 在发生碰撞前拦截</span><br>    <span class="hljs-keyword">if</span> (GlobalVariables.invincible.Value != <span class="hljs-literal">true</span>)<br>    &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-comment">// 碰撞到flag的时候胜利，不做拦截</span><br>    <span class="hljs-keyword">if</span> (target.gameObject.tag == <span class="hljs-string">&quot;Pipe&quot;</span> || target.gameObject.tag == <span class="hljs-string">&quot;Ground&quot;</span> || target.gameObject.tag == <span class="hljs-string">&quot;Enemy&quot;</span>)<br>    &#123;<br>        Debug.Log(<span class="hljs-string">$&quot;Collision <span class="hljs-subst">&#123;target.gameObject.tag&#125;</span>&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在<code>flapTheBird</code>方法调用前，即屏幕被点击触发小鸟向上飞之前，执行<code>Cheat</code>类的<code>PrefixFlapTheBird</code>方法，主要用来在飞行状态中屏蔽flap操作，避免小鸟获得向上的向量速度飞出屏幕<del>为什么不之间修改bounceSpeed???</del></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> <span class="hljs-title">PrefixFlapTheBird</span>(<span class="hljs-params">BirdScripts __instance</span>)</span><br>&#123;<br>    <span class="hljs-comment">// 在flap前调用</span><br>    <span class="hljs-comment">// 避免飞行时flap然后无法减速</span><br>    Debug.Log(<span class="hljs-string">&quot;Patch flapTheBird&quot;</span>);<br>    <span class="hljs-keyword">if</span> (GlobalVariables.fly.Value == <span class="hljs-literal">true</span>)<br>    &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>Update</code>方法循环调用，用于设置按键绑定，从游戏内获取对象，已经同步游戏分数到配置</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Update</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 循环调用</span><br>    KeyBound(); <span class="hljs-comment">// 按键检测</span><br>    GetObjects(); <span class="hljs-comment">// 获取游戏对象</span><br>    <span class="hljs-keyword">if</span> (GlobalVariables.birdInstances != <span class="hljs-literal">null</span>)<br>    &#123;<br>        GlobalVariables.score.Value = GlobalVariables.birdInstances.score; <span class="hljs-comment">// 同步分数</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>KeyBound</code>方法用于监听按键操作，调用<code>Cheat</code>中的功能</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">KeyBound</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 按键绑定</span><br>    <span class="hljs-keyword">if</span> (Input.GetKey(KeyCode.Escape))<br>    &#123;<br>        <span class="hljs-comment">// ESC暂停 鼠标太难点了</span><br>        <span class="hljs-keyword">if</span> (GamePlayController.instance != <span class="hljs-literal">null</span>)<br>        &#123;<br>            Debug.Log(<span class="hljs-string">&quot;key ESC down, pause&quot;</span>);<br>            GamePlayController.instance.pauseGame();<br><br>   &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>GetObjects</code>方法从游戏中获取小鸟的实例，获取小鸟的组件信息，获取游戏中的管道对象、管道间隙对象等</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">GetObjects</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 获取游戏内对象和实例</span><br>    GlobalVariables.birdInstances = BirdScripts.instance; <span class="hljs-comment">// 获取当前小鸟实例</span><br>    <span class="hljs-keyword">if</span> (GlobalVariables.birdInstances != <span class="hljs-literal">null</span>)<br>    &#123;<br>        <span class="hljs-comment">// 获取小鸟的组件</span><br>        GlobalVariables.birdCollider2D = GlobalVariables.birdInstances.GetComponent&lt;Collider2D&gt;();<br>        GlobalVariables.birdRigidbody2D = GlobalVariables.birdInstances.GetComponent&lt;Rigidbody2D&gt;();<br>    &#125;<br>    GlobalVariables.pipes = GameObject.FindGameObjectsWithTag(<span class="hljs-string">&quot;Pipe&quot;</span>);  <span class="hljs-comment">// 管道</span><br>    GlobalVariables.pipeHolders = GameObject.FindGameObjectsWithTag(<span class="hljs-string">&quot;PipeHolder&quot;</span>); <span class="hljs-comment">// 获取当前的管道间隙</span><br>    GlobalVariables.enemies = GameObject.FindGameObjectsWithTag(<span class="hljs-string">&quot;Enemy&quot;</span>);  <span class="hljs-comment">// 敌人</span><br>    GlobalVariables.flags = GameObject.FindGameObjectsWithTag(<span class="hljs-string">&quot;Flag&quot;</span>);  <span class="hljs-comment">// flag</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>小鸟的穿墙功能，即屏蔽碰撞的功能在<code>SetCollision</code>方法中实现</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetCollision</span>(<span class="hljs-params"><span class="hljs-built_in">bool</span> <span class="hljs-keyword">value</span></span>)</span><br>&#123;<br>    <span class="hljs-comment">// 设置管道和敌人的碰撞</span><br>    GlobalVariables.collision.Value = <span class="hljs-keyword">value</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; GlobalVariables.pipes.Length; i++)<br>    &#123;<br>        BoxCollider2D pipeBoxCollider2D = GlobalVariables.pipes[i].GetComponent&lt;BoxCollider2D&gt;();<br>        <span class="hljs-keyword">if</span> (pipeBoxCollider2D != <span class="hljs-literal">null</span>)<br>        &#123;<br>            pipeBoxCollider2D.enabled = <span class="hljs-keyword">value</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-built_in">int</span> i = <span class="hljs-number">0</span>; i &lt; GlobalVariables.enemies.Length; i++)<br>    &#123;<br>        BoxCollider2D enemyBoxCollider2D = GlobalVariables.enemies[i].GetComponent&lt;BoxCollider2D&gt;();<br>        <span class="hljs-keyword">if</span> (enemyBoxCollider2D == <span class="hljs-literal">null</span>)<br>        &#123;<br>            Collider2D enemyCollider2D = GlobalVariables.enemies[i].GetComponent&lt;Collider2D&gt;();<br>            <span class="hljs-keyword">if</span> (enemyCollider2D != <span class="hljs-literal">null</span>)<br>            &#123;<br>                enemyCollider2D.enabled = <span class="hljs-keyword">value</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">else</span><br>        &#123;<br>            enemyBoxCollider2D.enabled = <span class="hljs-keyword">value</span>;<br>        &#125;<br>    &#125;<br>    Debug.Log(<span class="hljs-string">$&quot;collision : <span class="hljs-subst">&#123;<span class="hljs-keyword">value</span>&#125;</span>&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里实现的方法不是禁用小鸟的碰撞组件，因为会影响游戏得分，使用的是禁用游戏中管道、敌人的碰撞组件</p>
+<p><code>SetFly</code>方法开启悬浮飞行，设置小鸟的重力影响为0，将速度向量设为0</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetFly</span>(<span class="hljs-params"><span class="hljs-built_in">bool</span> <span class="hljs-keyword">value</span></span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">value</span> == <span class="hljs-literal">true</span>)<br>    &#123;<br>        <span class="hljs-comment">// 关闭重力影响</span><br>        GlobalVariables.birdRigidbody2D.gravityScale = <span class="hljs-number">0f</span>;<br>        <span class="hljs-comment">// 速度向量设为0</span><br>        GlobalVariables.birdRigidbody2D.velocity = <span class="hljs-keyword">new</span> Vector2(<span class="hljs-number">0f</span>, <span class="hljs-number">0f</span>);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-comment">// 恢复重力影响</span><br>        GlobalVariables.birdRigidbody2D.gravityScale = <span class="hljs-number">1f</span>;<br>    &#125;<br>    Debug.Log(<span class="hljs-string">$&quot;fly : <span class="hljs-subst">&#123;<span class="hljs-keyword">value</span>&#125;</span>&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>SetSocre</code>修改游戏分数，并刷新分数显示</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetScore</span>(<span class="hljs-params"><span class="hljs-built_in">int</span> <span class="hljs-keyword">value</span></span>)</span><br>&#123;<br>    <span class="hljs-comment">// 设置游戏分数</span><br>    GlobalVariables.birdInstances.score = <span class="hljs-keyword">value</span>;<br>    GamePlayController.instance.setScore(<span class="hljs-keyword">value</span>);<br>    Debug.Log(<span class="hljs-string">$&quot;set score  <span class="hljs-subst">&#123;<span class="hljs-keyword">value</span>&#125;</span>&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>SetSpeed</code>设置x方向移动速度，由于<code>forwardSpeed</code>是<code>BirdScripts</code>的私有成员，不能能够小鸟的实例来直接修改，需要使用反射机制修改</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">SetSpeed</span>(<span class="hljs-params"><span class="hljs-built_in">float</span> <span class="hljs-keyword">value</span></span>)</span><br>&#123;<br>    <span class="hljs-comment">// 设置x轴速度</span><br>    GlobalVariables.speed.Value = <span class="hljs-keyword">value</span>;<br>    <span class="hljs-comment">// 私有成员需要使用反射修改</span><br>    FieldInfo privateField = <span class="hljs-keyword">typeof</span>(BirdScripts).GetField(<span class="hljs-string">&quot;forwardSpeed&quot;</span>, BindingFlags.NonPublic | BindingFlags.Instance);<br>    <span class="hljs-keyword">if</span> (privateField != <span class="hljs-literal">null</span>)<br>    &#123;<br>        privateField.SetValue(GlobalVariables.birdInstances, <span class="hljs-keyword">value</span>);<br>        Debug.Log(<span class="hljs-string">$&quot;forward speed : <span class="hljs-subst">&#123;<span class="hljs-keyword">value</span>&#125;</span>&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>BirdMove</code>将小鸟向指定方向移动</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">BirdMove</span>(<span class="hljs-params"><span class="hljs-built_in">float</span> x, <span class="hljs-built_in">float</span> y</span>)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (GlobalVariables.birdInstances != <span class="hljs-literal">null</span>)<br>    &#123;<br>        Vector3 basePosition = GlobalVariables.birdInstances.transform.position;<br>        basePosition.x += x;<br>        basePosition.y += y;<br>        GlobalVariables.birdInstances.transform.position = basePosition;<br>        Debug.Log(<span class="hljs-string">$&quot;move bird x : <span class="hljs-subst">&#123;x&#125;</span>, y : <span class="hljs-subst">&#123;y&#125;</span>&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>FinishGame</code>触发游戏胜利，播放胜利音效</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">FinishGame</span>()</span><br>&#123;<br>    <span class="hljs-comment">// 游戏胜利</span><br>    <span class="hljs-keyword">if</span> (GlobalVariables.birdInstances != <span class="hljs-literal">null</span>)<br>    &#123;<br>        GlobalVariables.birdInstances.isAlive = <span class="hljs-literal">false</span>;<br>        <span class="hljs-comment">// 需要利用反射调用私有方法和获取私有变量</span><br>        FieldInfo cheerClipFiled = <span class="hljs-keyword">typeof</span>(BirdScripts).GetField(<span class="hljs-string">&quot;cheerClip&quot;</span>, BindingFlags.NonPublic | BindingFlags.Instance);<br>        AudioSource audioSource = GlobalVariables.birdInstances.GetComponent&lt;AudioSource&gt;();<br>        audioSource.PlayOneShot((AudioClip)cheerClipFiled.GetValue(GlobalVariables.birdInstances));<br>        GamePlayController.instance.finishGame();<br>        Debug.Log(<span class="hljs-string">&quot;finish game!&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译插件得到<code>CheatPlugin.dll</code>，复制到plugins插件文件下启动游戏</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">PS</span> C:\workspace\腾讯菁英班\外挂实现分析<span class="hljs-literal">-PC</span>端\CheatPlugin&gt; dotnet build; <span class="hljs-built_in">cp</span> .\bin\Debug\net35\CheatPlugin.dll ..\FlappyBird_BepInEx\BepInEx\plugins\<br>MSBuild version <span class="hljs-number">17.3</span>.<span class="hljs-number">2</span>+<span class="hljs-number">561848881</span> <span class="hljs-keyword">for</span> .NET<br>  正在确定要还原的项目…<br>  所有项目均是最新的，无法还原。<br>  CheatPlugin -&gt; C:\workspace\腾讯菁英班\外挂实现分析<span class="hljs-literal">-PC</span>端\CheatPlugin\bin\Debug\net35\CheatPlugin.dll<br><br>已成功生成。<br>    <span class="hljs-number">0</span> 个警告<br>    <span class="hljs-number">0</span> 个错误<br><br>已用时间 <span class="hljs-number">00</span>:<span class="hljs-number">00</span>:<span class="hljs-number">00.69</span><br></code></pre></td></tr></table></figure>
+
+<p>根据GUI提示，F1打开控制菜单，ESC暂停游戏，1&#x2F;2切换无敌，3&#x2F;4切换碰撞，5&#x2F;6切换飞行，9增加分数，0结束游戏，上下左右控制小鸟移动</p>
+<p><img src="assets/2023-10-27-19-37-06-%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA.gif" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>外挂实现分析-PC端</div>
+      <div>https://blog.noxke.icu/2023/11/12/TencentGameClient/外挂实现分析-PC端/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="../%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/" title="外挂实现分析-移动端">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">外挂实现分析-移动端</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../../../../10/17/TencentGameClient/PC%E7%AB%AFVMP%E5%A3%B3%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" title="PC端VMP壳逆向分析">
+                        <span class="hidden-mobile">PC端VMP壳逆向分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,760 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 游戏分析使用工具如下:  root设备(nikel lineageos14 Android7.1.2) Il2CppDumper v6.7.40 dnSpy v6.1.8 IDA Pro 7.7 mt文件管理器 friad 16.1.4  安装FlappyBi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="外挂实现分析-移动端">
+<meta property="og:url" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班 游戏分析使用工具如下:  root设备(nikel lineageos14 Android7.1.2) Il2CppDumper v6.7.40 dnSpy v6.1.8 IDA Pro 7.7 mt文件管理器 friad 16.1.4  安装FlappyBi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-22-29-44-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-22-32-56-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-22-40-25-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-39-22-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-43-09-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-45-02-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-50-33-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-52-41-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-54-55-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-23-56-45-image.png">
+<meta property="og:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-29-00-52-11-1%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA.gif">
+<meta property="article:published_time" content="2023-11-12T02:05:06.000Z">
+<meta property="article:modified_time" content="2023-11-12T02:07:39.913Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="Reverse Engineering">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2023/11/12/TencentGameClient/%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-%E7%A7%BB%E5%8A%A8%E7%AB%AF/assets/2023-10-28-22-29-44-image.png">
+  
+  
+  
+  <title>外挂实现分析-移动端 - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="外挂实现分析-移动端"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-12 10:05" pubdate>
+          2023年11月12日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          104 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">外挂实现分析-移动端</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><a target="_blank" rel="noopener" href="https://github.com/noxke/TencentGameClientOpenCourse">GitHub - noxke&#x2F;TencentGameClientOpenCourse: 腾讯游戏客户端公开课2023 腾讯菁英班</a></p>
+<h3 id="游戏分析"><a href="#游戏分析" class="headerlink" title="游戏分析"></a>游戏分析</h3><p>使用工具如下:</p>
+<blockquote>
+<p>root设备(nikel lineageos14 Android7.1.2)</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Perfare/Il2CppDumper">Il2CppDumper v6.7.40</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/dnSpy/dnSpy">dnSpy v6.1.8</a></p>
+<p><a target="_blank" rel="noopener" href="https://hex-rays.com/IDA-pro/">IDA Pro 7.7</a></p>
+<p><a target="_blank" rel="noopener" href="https://bbs.binmt.cc/forum-2-1.html">mt文件管理器</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/frida/frida">friad 16.1.4</a></p>
+</blockquote>
+<p>安装FlappyBird.apk进行测试</p>
+<p><img src="assets/2023-10-28-22-29-44-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>看来安卓版本太高还不让装，添加<code>android:exported=&#39;true&#39;</code>之后虽然能装上，但是启动黑屏，老老实实用低版本安卓分析算了</p>
+<p>由于是Unity游戏，没必要分析Java层，直接查看libs文件价下的lib文件</p>
+<p><img src="assets/2023-10-28-22-32-56-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>看到<code>libil2cpp.so</code>文件，显然，这道题使用的是Unity il2cpp的方式，游戏逻辑在<code>libil2cpp.so</code>文件中，没有函数导出符号，分析难度较大。</p>
+<p>从apk中提取处<code>libil2cpp.so</code>和<code>global-metadata.dat</code>，使用Il2CppDumper工具提取符号信息</p>
+<p><img src="assets/2023-10-28-22-40-25-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>提取得到的文件有<code>DummyDll</code>下的DLL文件，<code>il2cpp.h</code>结构体信息，<code>script.json</code>符号信息，<code>DummyDll</code>下的<code>Assembly-CSharp.dll</code>可以用dnSpy打开，分析C#类方法和成员，但是只有符号信息，没有方法实现</p>
+<p>分析一下类名，可以知道玩家控制的逻辑在<code>PlayerController</code>类中实现，游戏控制和计分逻辑在<code>GameManager</code>类中实现</p>
+<p><code>PlayerController</code>类中需要关注以下几个方法</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-comment">// Token: 0x0600002C RID: 44 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x600001A&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E23E4&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E23E4&quot;</span>, VA = <span class="hljs-string">&quot;0x5E23E4&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Update</span>()</span><br>&#123;<br>&#125;<br><br><span class="hljs-comment">// Token: 0x0600002D RID: 45 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x600001B&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E2788&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E2788&quot;</span>, VA = <span class="hljs-string">&quot;0x5E2788&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">LateUpdate</span>()</span><br>&#123;<br>&#125;<br><br><span class="hljs-comment">// Token: 0x0600002E RID: 46 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x600001C&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E2A70&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E2A70&quot;</span>, VA = <span class="hljs-string">&quot;0x5E2A70&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnTriggerEnter2D</span>(<span class="hljs-params">Collider2D col</span>)</span><br>&#123;<br>&#125;<br><br><span class="hljs-comment">// Token: 0x0600002F RID: 47 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x600001D&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E30C8&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E30C8&quot;</span>, VA = <span class="hljs-string">&quot;0x5E30C8&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnCollisionEnter2D</span>(<span class="hljs-params">Collision2D col</span>)</span><br>&#123;<br>&#125;<br><br><span class="hljs-comment">// Token: 0x06000030 RID: 48 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x600001E&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E2FAC&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E2FAC&quot;</span>, VA = <span class="hljs-string">&quot;0x5E2FAC&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">KillPlayer</span>()</span><br>&#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>GameManager</code>类中需要关注<code>UpdateScore</code>方法</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cs"><span class="hljs-comment">// GameManager</span><br><span class="hljs-comment">// Token: 0x06000006 RID: 6 RVA: 0x00002050 File Offset: 0x00000250</span><br>[<span class="hljs-meta">Token(Token = <span class="hljs-string">&quot;0x6000006&quot;</span>)</span>]<br>[<span class="hljs-meta">Address(RVA = <span class="hljs-string">&quot;0x5E09BC&quot;</span>, Offset = <span class="hljs-string">&quot;0x5E09BC&quot;</span>, VA = <span class="hljs-string">&quot;0x5E09BC&quot;</span>)</span>]<br><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">UpdateScore</span>()</span><br>&#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上述方法的实现都在<code>libil2cpp.so</code>文件中，下面使用ida32分析该文件</p>
+<p>使用idapython加载<code>Il2CppDumper</code>的<code>ida_with_struct_py3.py</code>脚本，选择<code>script.json</code>和<code>il2cpp.h</code>文件，恢复函数名和结构体</p>
+<ul>
+<li><p><code>PlayerController__Update</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">PlayerController__Update</span><span class="hljs-params">(PlayerController_o *<span class="hljs-keyword">this</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> ( <span class="hljs-keyword">this</span>-&gt;fields.start )<br>    &#123;<br>        tiltSmooth = <span class="hljs-keyword">this</span>-&gt;fields.tiltSmooth;<br>        <span class="hljs-built_in">UnityEngine_Quaternion__Lerp</span>(&amp;v32, v33[<span class="hljs-number">0</span>], v28, tiltSmooth * deltaTime, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Transform__set_rotation</span>(transform, v32, <span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-built_in">UnityEngine_Transform__set_localPosition</span>(v16, v34, <span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-built_in">UnityEngine_Transform__set_rotation</span>(v17, v29, <span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>主要是设置旋转，设置位置</p>
+</li>
+<li><p><code>PlayerController__LateUpdate</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">PlayerController__LateUpdate</span><span class="hljs-params">(PlayerController_o*<span class="hljs-keyword">this</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (Instance-&gt;fields.start &amp;&amp; <span class="hljs-built_in">UnityEngine_Input__GetMouseButtonDown</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>))<br>    &#123;<br>        <span class="hljs-built_in">UnityEngine_Rigidbody2D__set_gravityScale</span>(<span class="hljs-keyword">this</span>-&gt;fields.playerRigid, <span class="hljs-number">1.0</span>, <span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">this</span>-&gt;fields.tiltSmooth = <span class="hljs-keyword">this</span>-&gt;fields.minTiltSmooth;<br>        <span class="hljs-built_in">UnityEngine_Transform__set_rotation</span>(transform, <span class="hljs-keyword">this</span>-&gt;fields.upRotation, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Vector2__get_zero</span>(&amp;value, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Rigidbody2D__set_velocity</span>(playerRigid, value, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Vector2__get_up</span>(&amp;v11, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Vector2__op_Multiply_2987556</span>(&amp;force, v11, <span class="hljs-keyword">this</span>-&gt;fields.thrust, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">UnityEngine_Rigidbody2D__AddForce</span>(v7, force, <span class="hljs-number">0</span>);<br>    &#125;<br>    <span class="hljs-built_in">UnityEngine_Rigidbody2D__get_velocity</span>(&amp;value, <span class="hljs-keyword">this</span>-&gt;fields.playerRigid, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (value.fields.y &lt; <span class="hljs-number">-1.0</span>)<br>    &#123;<br>        <span class="hljs-keyword">this</span>-&gt;fields.tiltSmooth = <span class="hljs-keyword">this</span>-&gt;fields.maxTiltSmooth;<br>        <span class="hljs-built_in">UnityEngine_Rigidbody2D__set_gravityScale</span>(v9, <span class="hljs-number">2.0</span>, <span class="hljs-number">0</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个函数的内容相对就多一些类，但是根据函数名很容易分析出功能，主要是两个if内的内容，第一个if当屏幕被点击时进入，把小鸟的刚体组件重力影响<code>gravityScale</code>修改为1.0，将刚体组件的速度向量<code>velocity</code>设置为0，为刚体组件施加一个y反向的力，大小为<code>this-&gt;fields.thrust</code>，该部分的目的是让小鸟有一个向上的速度；第二个if先判断向下的速度，当向下速度小于1.0时增大刚体的重力影响</p>
+</li>
+<li><p><code>PlayerController__OnTriggerEnter2D</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">PlayerController__OnTriggerEnter2D</span><span class="hljs-params">(PlayerController_o*<span class="hljs-keyword">this</span>, UnityEngine_Collider2D_o* col)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">UnityEngine_Component__CompareTag</span>(transform, (System_String_o*)StringLiteral_3006, <span class="hljs-number">0</span>))<br>    &#123;<br>        <span class="hljs-built_in">GameManager__UpdateScore</span>(GameManager_TypeInfo-&gt;static_fields-&gt;Instance, v7);<br>    &#125;<br>    <span class="hljs-keyword">else</span><br>    &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-built_in">UnityEngine_Component__CompareTag</span>(v8, (System_String_o*)StringLiteral_3014, <span class="hljs-number">0</span>))<br>        &#123;<br>            <span class="hljs-built_in">PlayerController__KillPlayer</span>(<span class="hljs-keyword">this</span>, v29);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里主要是两个<code>CompareTag</code>，第一个<code>CompareTag</code>比较进入的物体是否为<code>Score</code>，如果是<code>Score</code>则调用<code>GameManager__UpdateScore</code>更新游戏分数，第二个<code>CompareTag</code>比较进入的物体是否为<code>Obstacle</code>，如果是<code>Obstacle</code>则调用<code>PlayerController__KillPlayer</code>触发死亡</p>
+</li>
+<li><p><code>PlayerController__OnCollisionEnter2D</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">PlayerController__OnCollisionEnter2D</span><span class="hljs-params">(PlayerController_o*<span class="hljs-keyword">this</span>, UnityEngine_Collision2D_o* col,)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">UnityEngine_Component__CompareTag</span>(transform, (System_String_o*)StringLiteral_3015, <span class="hljs-number">0</span>))<br>    &#123;<br>        <span class="hljs-built_in">PlayerController__KillPlayer</span>(<span class="hljs-keyword">this</span>, v6);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里只有一个<code>CompareTag</code>，比较碰撞的物体是否为<code>Ground</code>，是<code>Ground</code>则调用<code>PlayerController__KillPlayer</code>触发死亡</p>
+</li>
+<li><p><code>PlayerController__KillPlayer</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> __fastcall <span class="hljs-title">PlayerController__KillPlayer</span><span class="hljs-params">(PlayerController_o *<span class="hljs-keyword">this</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">GameManager__EndGame</span>(GameManager_TypeInfo-&gt;static_fields-&gt;Instance, method);<br>    <span class="hljs-built_in">UnityEngine_Vector2__get_zero</span>(&amp;v5, <span class="hljs-number">0</span>);    <br>    <span class="hljs-built_in">UnityEngine_Rigidbody2D__set_velocity</span>(playerRigid, v5, <span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>调用<code>GameManager__EndGame</code>结束游戏，将小鸟刚体速度向量设置为0</p>
+</li>
+<li><p><code>GameManager__UpdateScore</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">GameManager__UpdateScore</span><span class="hljs-params">(GameManager_o *<span class="hljs-keyword">this</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    gameScoreText = <span class="hljs-keyword">this</span>-&gt;fields.gameScoreText;<br>    v4 = <span class="hljs-keyword">this</span>-&gt;fields.gameScore + <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">this</span>-&gt;fields.gameScore = v4;<br>    <span class="hljs-built_in">SoundManager__PlayTheAudio</span>(SoundManager_TypeInfo-&gt;static_fields-&gt;Instance, (System_String_o*)StringLiteral_3005, v8);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>分数+1，刷新分数显示，播放音乐</p>
+</li>
+</ul>
+<h4 id="Patch二进制文件破解"><a href="#Patch二进制文件破解" class="headerlink" title="Patch二进制文件破解"></a>Patch二进制文件破解</h4><p>在上面分析里面可以知道有两个<code>CompareTag</code>分支会触发死亡，只要Patch掉这两个分支，就可以轻松实现无敌效果，至于能不能关闭小鸟与管道的碰撞，可以猜测管道属于<code>Obstacle</code>，地面属于<code>Ground</code>，因此小鸟可以穿过管道，但是不会穿过地面</p>
+<p>汇编界面查看这两个分支</p>
+<img src="assets/2023-10-28-23-39-22-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="522">
+
+<p>这里是<code>PlayerController__OnTriggerEnter2D</code>的死亡分支，比较进入的物体是否为<code>Obstacle</code>，当比较结果不为1时调整到函数末尾返回，否则进入后续代码触发死亡，将BNE修改为B指令即可</p>
+<img src="assets/2023-10-28-23-43-09-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="525">
+
+<p>继续查看<code>PlayerController__OnCollisionEnter2D</code>中的<code>CompareTag</code>分支，与上面的情况类似，将BNE修改为B指令</p>
+<img src="assets/2023-10-28-23-45-02-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="526">
+
+<p>分数的更新在<code>GameManager__UpdateScore</code>中，将分数加一进行修改即可实现修改游戏分数，修改如下，将加一修改为加0xFF</p>
+<img title="" src="assets/2023-10-28-23-50-33-image.png" srcset="/img/loading.gif" lazyload alt="" width="523">
+
+<p>保存修改并上传到手机</p>
+<p><img src="assets/2023-10-28-23-52-41-image.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用mt文件管理器将修改后的libil2cpp.so添加到apk中重新打包签名</p>
+<img src="assets/2023-10-28-23-54-55-image.png" srcset="/img/loading.gif" lazyload title="" alt="" width="246">
+
+<p>安装测试</p>
+<img title="" src="assets/2023-10-28-23-56-45-image.png" srcset="/img/loading.gif" lazyload alt="" width="241">
+
+<p>无论是碰撞地面还是管道，都不会死亡，并且一次得分为255分，游戏破解完成</p>
+<h4 id="frida一把梭"><a href="#frida一把梭" class="headerlink" title="frida一把梭"></a>frida一把梭</h4><p>将frida-server上传到手机，编写python脚本附加到游戏</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_message</span>(<span class="hljs-params">message, data</span>):<br>    <span class="hljs-keyword">if</span> message[<span class="hljs-string">&#x27;type&#x27;</span>] == <span class="hljs-string">&#x27;send&#x27;</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[*] &#123;0&#125;&quot;</span>.<span class="hljs-built_in">format</span>(message[<span class="hljs-string">&#x27;payload&#x27;</span>]))<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(message)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    device = frida.get_usb_device()<br>    app = device.get_frontmost_application()<br>    process = device.attach(app.pid)<br><br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">True</span>):<br>        jscode = <span class="hljs-string">&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[0] : 退出&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[1] : 开启无敌&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[2] : 关闭无敌&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[3] : 开启飞行&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[4] : 关闭飞行&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;[5] : 加分数&quot;</span>)<br>        <span class="hljs-comment"># print(&quot;[9] : hook测试&quot;)</span><br>        choice = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;&gt;&gt; &quot;</span>))<br>        <span class="hljs-keyword">match</span> choice:<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>                <span class="hljs-keyword">break</span><br>            <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>                jscode = invincible_js<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:<br>                jscode = off_invincible_js<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:<br>                jscode = fly_js<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:<br>                jscode = off_fly_js<br>            <span class="hljs-keyword">case</span> <span class="hljs-number">5</span>:<br>                jscode = add_score_js<br>            <span class="hljs-comment"># case 9:</span><br>            <span class="hljs-comment">#     jscode = hook_js</span><br>            <span class="hljs-keyword">case</span> _:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;输入错误&quot;</span>)<br>        script = process.create_script(jscode)<br>        script.on(<span class="hljs-string">&#x27;message&#x27;</span>, on_message)<br>        script.load()<br><br>    process.detach()<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+
+<p>实现的功能有无敌、飞行和加分数，下面分别分析frida脚本内容</p>
+<ul>
+<li><p>开启无敌</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Java</span>.<span class="hljs-title function_">perform</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">var</span> libil2cpp = <span class="hljs-title class_">Process</span>.<span class="hljs-title function_">findModuleByName</span>(<span class="hljs-string">&quot;libil2cpp.so&quot;</span>);<br>    <span class="hljs-comment">// OnTriggerEnter2D</span><br>    <span class="hljs-keyword">var</span> offset1 = <span class="hljs-number">0x5E2BCC</span>;<br>    <span class="hljs-keyword">var</span> addr1 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset1);<br>    <span class="hljs-keyword">var</span> arr1 = [<span class="hljs-number">0xE5</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0xEA</span>]; <span class="hljs-comment">// B 0x5E2F68</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-comment">// OnCollisionEnter2D</span><br>    <span class="hljs-keyword">var</span> offset2 = <span class="hljs-number">0x5E30CC</span>;<br>    <span class="hljs-keyword">var</span> addr2 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset2);<br>    <span class="hljs-keyword">var</span> arr2 = [<span class="hljs-number">0x40</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0xEA</span>]; <span class="hljs-comment">// B 0x5E31D4</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr2, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr2, arr2);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>其实就是对内存中<code>CompareTag</code>的分支进行修改，将BNE修改为B指令，需要注意的是地址需要用基地址+相对偏移的方式得到，修改前需要修改段保护权限</p>
+</li>
+<li><p>关闭无敌</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Java</span>.<span class="hljs-title function_">perform</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">var</span> libil2cpp = <span class="hljs-title class_">Process</span>.<span class="hljs-title function_">findModuleByName</span>(<span class="hljs-string">&quot;libil2cpp.so&quot;</span>);<br>    <span class="hljs-comment">// OnTriggerEnter2D</span><br>    <span class="hljs-keyword">var</span> offset1 = <span class="hljs-number">0x5E2BCC</span>;<br>    <span class="hljs-keyword">var</span> addr1 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset1);<br>    <span class="hljs-keyword">var</span> arr1 = [<span class="hljs-number">0xE5</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x1A</span>]; <span class="hljs-comment">// BNE 0x5E2F68</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-comment">// OnCollisionEnter2D</span><br>    <span class="hljs-keyword">var</span> offset2 = <span class="hljs-number">0x5E30CC</span>;<br>    <span class="hljs-keyword">var</span> addr2 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset2);<br>    <span class="hljs-keyword">var</span> arr2 = [<span class="hljs-number">0x18</span>, <span class="hljs-number">0xB0</span>, <span class="hljs-number">0x8D</span>, <span class="hljs-number">0xE2</span>]; <span class="hljs-comment">// ADD R11, SP, #0x18</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr2, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr2, arr2);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>将两条指令改回来</p>
+</li>
+<li><p>开启飞行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Java</span>.<span class="hljs-title function_">perform</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">var</span> libil2cpp = <span class="hljs-title class_">Process</span>.<span class="hljs-title function_">findModuleByName</span>(<span class="hljs-string">&quot;libil2cpp.so&quot;</span>);<br>    <span class="hljs-comment">// 在LateUpdate函数中有设置重力的部分, 将数值修改为0.125减轻重力的影响</span><br>    <span class="hljs-keyword">var</span> offset1 = <span class="hljs-number">0x5E289C</span>;<br>    <span class="hljs-keyword">var</span> addr1 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset1);<br>    <span class="hljs-keyword">var</span> arr1 = [<span class="hljs-number">0x3D</span>, <span class="hljs-number">0x14</span>, <span class="hljs-number">0xA0</span>, <span class="hljs-number">0xE3</span>]; <span class="hljs-comment">// MOV R1. #0x3D000000 0.03125</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-keyword">var</span> offset2 = <span class="hljs-number">0x5E2A38</span>; <br>    <span class="hljs-keyword">var</span> addr2 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset2);<br>    <span class="hljs-keyword">var</span> arr2 = [<span class="hljs-number">0x3D</span>, <span class="hljs-number">0x14</span>, <span class="hljs-number">0xA0</span>, <span class="hljs-number">0xE3</span>]; <span class="hljs-comment">// MOV R1. #0x3D000000 0.03125</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-comment">// 将tiltSmooth修改为maxTiltSmooth的分支patch掉</span><br>    <span class="hljs-keyword">var</span> offset3 = <span class="hljs-number">0x5E2A14</span>; <br>    <span class="hljs-keyword">var</span> addr3 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset3);<br>    <span class="hljs-keyword">var</span> arr3 = [<span class="hljs-number">0x0A</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0xEA</span>]; <span class="hljs-comment">// B 0x5E2A44</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr3, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr3, arr3);<br>    <span class="hljs-comment">// 还需要将thrust推力减小</span><br>    <span class="hljs-comment">// 由于不能直接拿到PlayerController的实例,需要先hook Update, 获得实例之后才能继续修改</span><br>    <span class="hljs-keyword">var</span> pc_instance = <span class="hljs-variable constant_">NULL</span>;<br>    <span class="hljs-keyword">var</span> func_offset = <span class="hljs-number">0x5E23E4</span>; <span class="hljs-comment">// PlayerController__Update</span><br>    <span class="hljs-keyword">var</span> func_addr = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(func_offset);<br>    <span class="hljs-comment">// 函数对象</span><br>    <span class="hljs-keyword">var</span> targetFunc = <span class="hljs-keyword">new</span> <span class="hljs-title class_">NativeFunction</span>(func_addr, <span class="hljs-string">&#x27;void&#x27;</span>, [<span class="hljs-string">&#x27;pointer&#x27;</span>]);<br>    <span class="hljs-comment">// hook</span><br>    <span class="hljs-title class_">Interceptor</span>.<span class="hljs-title function_">attach</span>(targetFunc, &#123;<br>        <span class="hljs-attr">onEnter</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">args</span>) &#123;<br>            <span class="hljs-comment">// send(args[0]);</span><br>            pc_instance = args[<span class="hljs-number">0</span>];<br>            <span class="hljs-title class_">Interceptor</span>.<span class="hljs-title function_">detachAll</span>();<br>            <span class="hljs-title function_">send</span>(<span class="hljs-string">`PlayerController Instance: <span class="hljs-subst">$&#123;pc_instance&#125;</span>`</span>);<br>            <span class="hljs-keyword">var</span> thrust_ptr = pc_instance.<span class="hljs-title function_">add</span>(<span class="hljs-number">0xC</span>); <span class="hljs-comment">// 偏移0xC</span><br>            <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeFloat</span>(thrust_ptr, <span class="hljs-number">50</span>);<br>            <span class="hljs-keyword">var</span> thrust = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readFloat</span>(thrust_ptr);<br>            <span class="hljs-title function_">send</span>(thrust);<br>        &#125;<br>    &#125;);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>开启飞行稍微有点复杂，首先需要修改刚体的重力，由于很难通过地址去之间修改重力值，并且前面分析知道在Update中会持续修改重力，直接改内存不可行，所以选择Patch修改重力部分的代码，原来的代码中一处设置重力为2.0，一处为1.0，这里将其修改为0.03125，这个值16进制表示方便，至于为什么不设置为0，是为了放置小鸟飞出屏幕，这里将其改小实现缓降的效果；tiltSmooth会影响小鸟下落的速度（貌似是旋转速度，没仔细测试，顺便改了），把tiltSmooth修改为maxTiltSmooth的分支patch掉的分支Patch掉；另外还影响飞行效果的就是点击屏幕时小鸟往上飞，需要将向上飞的效果减弱，不然容易飞出屏幕，经过前面的分析可以知道点击屏幕后会给小鸟一个向上的力，这个力保存在<code>this-&gt;fields.thrust</code>中，想要找到这个值，需要首先知道<code>PlayerController</code>实例的位置，但是显然没法直接得到，所以需要使用其他的方式来获取实例的地址，因为<code>Update</code>方法在每帧都会调用，并且第一个参数就是<code>PlayerController</code>的实例，所以可以直接hook<code>Update</code>函数，读取第一个参数，得到所需的实例地址，再根据偏移，得到<code>this-&gt;fields.thrust</code>的指针，经过测试可以知道施加的向上的力大小默认为225，这里改为50，减小向上飞的效果</p>
+</li>
+<li><p>关闭飞行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Java</span>.<span class="hljs-title function_">perform</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">var</span> libil2cpp = <span class="hljs-title class_">Process</span>.<span class="hljs-title function_">findModuleByName</span>(<span class="hljs-string">&quot;libil2cpp.so&quot;</span>);<br>    <span class="hljs-comment">// 在LateUpdate函数中有设置重力的部分, 恢复其数值</span><br>    <span class="hljs-keyword">var</span> offset1 = <span class="hljs-number">0x5E289C</span>;<br>    <span class="hljs-keyword">var</span> addr1 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset1);<br>    <span class="hljs-keyword">var</span> arr1 = [<span class="hljs-number">0xFE</span>, <span class="hljs-number">0x15</span>, <span class="hljs-number">0xA0</span>, <span class="hljs-number">0xE3</span>]; <span class="hljs-comment">// MOV R1, #0x3F800000</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-keyword">var</span> offset2 = <span class="hljs-number">0x5E2A38</span>;<br>    <span class="hljs-keyword">var</span> addr2 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset2);<br>    <span class="hljs-keyword">var</span> arr2 = [<span class="hljs-number">0x01</span>, <span class="hljs-number">0x11</span>, <span class="hljs-number">0xA0</span>, <span class="hljs-number">0xE3</span>]; <span class="hljs-comment">// MOV R1, #0x40000000</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr1, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr1, arr1);<br>    <span class="hljs-comment">// 将tiltSmooth修改为maxTiltSmooth的分支恢复</span><br>    <span class="hljs-keyword">var</span> offset3 = <span class="hljs-number">0x5E2A14</span>; <br>    <span class="hljs-keyword">var</span> addr3 = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(offset3);<br>    <span class="hljs-keyword">var</span> arr3 = [<span class="hljs-number">0x0A</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x00</span>, <span class="hljs-number">0x5A</span>]; <span class="hljs-comment">// BPL 0x5E2A44</span><br>    <span class="hljs-comment">// 修改内存保护</span><br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">protect</span>(addr3, <span class="hljs-number">0x1000</span>, <span class="hljs-string">&#x27;rwx&#x27;</span>);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeByteArray</span>(addr3, arr3);<br>    <span class="hljs-comment">// 恢复thrust推力</span><br>    <span class="hljs-comment">// 由于不能直接拿到PlayerController的实例,需要先hook Update, 获得实例之后才能继续修改</span><br>    <span class="hljs-keyword">var</span> pc_instance = <span class="hljs-variable constant_">NULL</span>;<br>    <span class="hljs-keyword">var</span> func_offset = <span class="hljs-number">0x5E23E4</span>; <span class="hljs-comment">// PlayerController__Update</span><br>    <span class="hljs-keyword">var</span> func_addr = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(func_offset);<br>    <span class="hljs-comment">// 函数对象</span><br>    <span class="hljs-keyword">var</span> targetFunc = <span class="hljs-keyword">new</span> <span class="hljs-title class_">NativeFunction</span>(func_addr, <span class="hljs-string">&#x27;void&#x27;</span>, [<span class="hljs-string">&#x27;pointer&#x27;</span>]);<br>    <span class="hljs-comment">// hook</span><br>    <span class="hljs-title class_">Interceptor</span>.<span class="hljs-title function_">attach</span>(targetFunc, &#123;<br>        <span class="hljs-attr">onEnter</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">args</span>) &#123;<br>            <span class="hljs-comment">// send(args[0]);</span><br>            pc_instance = args[<span class="hljs-number">0</span>];<br>            <span class="hljs-title class_">Interceptor</span>.<span class="hljs-title function_">detachAll</span>();<br>            <span class="hljs-title function_">send</span>(<span class="hljs-string">`PlayerController Instance: <span class="hljs-subst">$&#123;pc_instance&#125;</span>`</span>);<br>            <span class="hljs-keyword">var</span> thrust_ptr = pc_instance.<span class="hljs-title function_">add</span>(<span class="hljs-number">0xC</span>); <span class="hljs-comment">// 偏移0xC</span><br>            <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeFloat</span>(thrust_ptr, <span class="hljs-number">225</span>);<br>            <span class="hljs-keyword">var</span> thrust = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readFloat</span>(thrust_ptr);<br>            <span class="hljs-title function_">send</span>(<span class="hljs-string">`thrust: <span class="hljs-subst">$&#123;thrust&#125;</span>`</span>);<br>        &#125;<br>    &#125;);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>开启飞行的逆过程</p>
+</li>
+<li><p>修改分数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title class_">Java</span>.<span class="hljs-title function_">perform</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">var</span> libil2cpp = <span class="hljs-title class_">Process</span>.<span class="hljs-title function_">findModuleByName</span>(<span class="hljs-string">&quot;libil2cpp.so&quot;</span>);<br>    <span class="hljs-comment">// 读取GameManager_TypeInfo</span><br>    <span class="hljs-keyword">var</span> gm_info_addr = libil2cpp.<span class="hljs-property">base</span>.<span class="hljs-title function_">add</span>(<span class="hljs-number">0x7690F0</span>);<br>    <span class="hljs-keyword">var</span> gm_info = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readPointer</span>(gm_info_addr);<br>    <span class="hljs-keyword">var</span> gm_static_filed_addr = gm_info.<span class="hljs-title function_">add</span>(<span class="hljs-number">0x5C</span>); <span class="hljs-comment">// 结构体偏移0x5C</span><br>    <span class="hljs-keyword">var</span> gm_static_filed = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readPointer</span>(gm_static_filed_addr);<br>    <span class="hljs-keyword">var</span> gm_instance = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readPointer</span>(gm_static_filed); <span class="hljs-comment">// 偏移0x00</span><br>    <span class="hljs-keyword">var</span> gm_score_ptr = gm_instance.<span class="hljs-title function_">add</span>(<span class="hljs-number">0x50</span>); <span class="hljs-comment">// 分数偏移0x50</span><br>    <span class="hljs-keyword">var</span> gm_score = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readS32</span>(gm_score_ptr);<br>    <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">writeS32</span>(gm_score_ptr, gm_score+<span class="hljs-number">100</span>); <span class="hljs-comment">// 加100分</span><br>    gm_score = <span class="hljs-title class_">Memory</span>.<span class="hljs-title function_">readS32</span>(gm_score_ptr); <span class="hljs-comment">// 修改分数</span><br>    <span class="hljs-title function_">send</span>(<span class="hljs-string">`game score: <span class="hljs-subst">$&#123;gm_score&#125;</span>`</span>);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>改分和设置飞行类似，需要通过实例找偏移再找到要改的数据的位置，但是<code>GameManager</code>是个静态类，直接有导出的地址，经过几次偏移就能得到，修改内存就能改分，这里直接加100分，遗憾的一点是改完后不会自动刷新，需要游戏触发一次更新分数才会显示，本来是想用frida调用<code>UpdateScore</code>函数的，但是调用的时候一直出错，所有没能实现自动刷新的效果</p>
+</li>
+</ul>
+<p>使用未修改的游戏安装包安装测试：</p>
+<p><img src="assets/2023-10-29-00-52-11-1%E5%8A%9F%E8%83%BD%E6%BC%94%E7%A4%BA.gif" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/%E8%85%BE%E8%AE%AF%E6%B8%B8%E6%88%8F%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E5%85%A8/" class="category-chain-item">腾讯游戏客户端安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>外挂实现分析-移动端</div>
+      <div>https://blog.noxke.icu/2023/11/12/TencentGameClient/外挂实现分析-移动端/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../%E5%A4%96%E6%8C%82%E5%AE%9E%E7%8E%B0%E5%88%86%E6%9E%90-PC%E7%AB%AF/" title="外挂实现分析-PC端">
+                        <span class="hidden-mobile">外挂实现分析-PC端</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
