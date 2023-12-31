@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>2023.log</title>
+    <link href="/2023/12/31/daily/2023-log/"/>
+    <url>/2023/12/31/daily/2023-log/</url>
+    
+    <content type="html"><![CDATA[<h1 id="noxke’s-2023"><a href="#noxke’s-2023" class="headerlink" title="noxke’s 2023"></a>noxke’s 2023</h1><h2 id=""><a href="#" class="headerlink" title=":)"></a>:)</h2><p>奇怪的一年，让我最开心的估计是linux</p><p><img src="assets/2023-12-31-23-04-23-image.png"></p><p>逐渐受不了windows繁琐的配置、臃肿的文件系统、频繁蓝屏…，2月的时候想着换linux试试，犹豫了很久该选哪个发行版，最后为了方便养老选了archlinux</p><p>-Syyu一把梭有多爽，用livecd救系统就有多狼狈，一年滚挂了五六次，小的图形化挂掉，大的直接&#x2F;etc炸掉。挂掉的次数貌似比用win多得多，但感觉值得，安装软件不用各种“高速下载”，卸载软件不用斗智斗勇…</p><p>一直很想玩服务器，今年总算捡垃圾弄了台</p><p><img src="assets/2023-12-31-23-20-25-image.png"></p><p>洋垃圾e3-1230，虽然很垃圾，但自己all in one搭了软路由、虚拟机平台、docker集群，做了多网络隔离，也挂机了数千小时的mc服务器</p><p>接触ctf一年了，没什么成绩，但感觉是段不错的经历，一年应该超过了100道逆向题</p><p><img src="assets/2023-12-31-23-34-16-image.png"></p><p>从最开始的只会Ida F5反编译，到现在能跟着调试分析vmp虚拟机，从用户态慢慢过渡到内核态，调试了c、c++、rust、python、java等各种语言运行过程，有嗯看汇编十几个小时忘记吃饭，有手撕两个小时发现是md5，有手动patch几个小时才想起ida脚本…</p><p>一直以为自己看淡了感情，但破站年度总结一看「I LOVE YOU」「恋爱色魔法」「嘘つきは恋のはじまり」都听了四五十次，庆幸洛天依是纸片人，感谢洛佬无数次帮我走出低谷。</p><h2 id="-1"><a href="#-1" class="headerlink" title=":("></a>:(</h2><p>emo</p><p>谎言</p><p>孤独</p><p>压力</p><p>未来</p><p>2023 最难受的一年</p><h2 id="echo-CONTENT-2024-task"><a href="#echo-CONTENT-2024-task" class="headerlink" title="echo $CONTENT &gt; 2024.task"></a>echo $CONTENT &gt; 2024.task</h2><p>以自己开心为目的</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>日常</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>daily</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>攻防世界LostKey</title>
     <link href="/2023/11/27/ctf_wp/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CLostKey/"/>
     <url>/2023/11/27/ctf_wp/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8CLostKey/</url>
