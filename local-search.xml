@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>网安实践4-Misc</title>
+    <link href="/2024/06/18/ctf_wp/%E7%BD%91%E5%AE%89%E5%AE%9E%E8%B7%B54-Misc/"/>
+    <url>/2024/06/18/ctf_wp/%E7%BD%91%E5%AE%89%E5%AE%9E%E8%B7%B54-Misc/</url>
+    
+    <content type="html"><![CDATA[<h2 id="T1-压缩包加密解密"><a href="#T1-压缩包加密解密" class="headerlink" title="T1.压缩包加密解密"></a>T1.压缩包加密解密</h2><p>第一步伪加密</p><p><img src="assets/2024-06-17-19-51-05-image.png"></p><p><img src="assets/2024-06-17-19-51-18-image.png"></p><p>解密得到一个缺三个定位角的反色二维码</p><p><img src="assets/2024-06-17-19-51-59-flag.png"></p><p>反色处理再补一下定位角</p><p><img src="assets/2024-06-17-20-16-04-realflag.png"></p><p><code>vmc&#123;This_is_true_ZIP!_p-_-q_&#125;</code></p><h2 id="T2-文件识别、合并与分离"><a href="#T2-文件识别、合并与分离" class="headerlink" title="T2.文件识别、合并与分离"></a>T2.文件识别、合并与分离</h2><p>binwalk识别到文件末尾有一个png图片</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">❯ binwalk FakeZip.zip<br><br>DECIMAL       HEXADECIMAL     DESCRIPTION<br>--------------------------------------------------------------------------------<br>0             0x0             Zip archive data, at least v2.0 to extract, name: Flags/<br>36            0x24            Zip archive data, encrypted at least v2.0 to extract, compressed size: 30, uncompressed size: 18, name: Flags/FakeFlag.txt<br>114           0x72            Zip archive data, encrypted at least v2.0 to extract, compressed size: 154003, uncompressed size: 163454, name: Flags/TrueFlag.png<br>154453        0x25B55         End of Zip archive, footer length: 22<br>154475        0x25B6B         PNG image, 2421 x 1059, 8-bit/color RGBA, non-interlaced<br>154566        0x25BC6         Zlib compressed data, compressed<br></code></pre></td></tr></table></figure><p>但是binwalk分离不下来，用foremost</p><p><img src="assets/2024-06-17-20-22-15-00000301.png"></p><p>这应该是压缩包口令<code>HustCsEnCc</code></p><p>FakeFlag.txt: <code>this_is_fake_zip</code></p><p>TrueFlag.png</p><p><img src="assets/2024-06-17-20-23-37-TrueFlag.png"></p><p><code>TrueFlag=vmc&#123;md5_32(FakeFlag)&#125;</code></p><p><code>vmc&#123;4059614b85477b90720a772f4fdbf1f6&#125;</code></p><h2 id="T3-图片隐写"><a href="#T3-图片隐写" class="headerlink" title="T3.图片隐写"></a>T3.图片隐写</h2><p>给的jpg与正常jpg对比</p><p>每4个字节的顺序<code>h0 h1 h2 h3</code>被修改为了<code>h3 h2 h1 h0</code></p><p><img src="assets/2024-06-17-20-54-00-image.png"></p><p><img src="assets/2024-06-17-20-54-13-image.png"></p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><br>f1 = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;WhoAreYou.jpg&quot;</span>, <span class="hljs-string">&quot;rb&quot;</span>)<br>f2 = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;output.jpg&quot;</span>, <span class="hljs-string">&quot;wb&quot;</span>)<br><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    data = f1.read(<span class="hljs-number">4</span>)<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">len</span>(data) == <span class="hljs-number">0</span>):<br>        <span class="hljs-keyword">break</span><br>    f2.write(data[::-<span class="hljs-number">1</span>])<br><br>f1.close()<br>f2.close() <br></code></pre></td></tr></table></figure><p>一张蓝屏图片</p><p><img src="assets/2024-06-17-20-55-55-output.jpg"></p><p>眼神好直接看到flag了</p><p><img src="assets/2024-06-17-20-58-05-image.png"></p><p><code>vmc&#123;You_Are_Huo_Yan_Jin_Jing&#125;</code></p><h2 id="T4-流量包分析"><a href="#T4-流量包分析" class="headerlink" title="T4.流量包分析"></a>T4.流量包分析</h2><p>追踪http发现ncc.png</p><p><img src="assets/2024-06-17-21-20-29-image.png"></p><p>保存下来，png图片打不开</p><p>010editor提示crc错误</p><p><code>Executing template &#39;/home/xketx/.config/SweetScape/010 Templates/Repository/PNG.bt&#39; on &#39;/home/noxke/Desktop/网安实践4/Misc/T4/ncc.png&#39;...   *ERROR: CRC Mismatch @ chunk[0]; in data: f8ffa6dc; expected: 7549d9b3</code></p><p>手动纠正crc</p><p><img src="assets/2024-06-17-21-21-34-ncc.png"></p><p>猜测改了图片大小，导致crc校验识别</p><p><a href="https://www.cnblogs.com/lixiongji/p/14013484.html">[CTF] 根据crc码矫正png图片宽高 - sec_j - 博客园</a></p><p>真实图片大小<code>width:000003ff  height:000002ee</code></p><p><img src="assets/2024-06-17-21-36-04-ncc.png"></p><p><code>vmc&#123;It_is_so_beautiful_my_home_NCC&#125;</code></p><h2 id="T5-音频隐写"><a href="#T5-音频隐写" class="headerlink" title="T5.音频隐写"></a>T5.音频隐写</h2><p>第一遍没听出来，找原曲对比一下，听第二遍发现在<code>1:40</code>开始有杂音</p><p>波形图看不出来什么</p><p><img src="assets/2024-06-18-11-55-09-image.png"></p><p>频谱图</p><p><img src="assets/2024-06-18-11-56-43-image.png"></p><p><code>vmc&#123;Mayday_5525_back_to_the_day&#125;</code></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>ctf-wp</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Misc</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>网安实践4-Crypto</title>
     <link href="/2024/06/16/ctf_wp/%E7%BD%91%E5%AE%89%E5%AE%9E%E8%B7%B54-Crypto/"/>
     <url>/2024/06/16/ctf_wp/%E7%BD%91%E5%AE%89%E5%AE%9E%E8%B7%B54-Crypto/</url>
