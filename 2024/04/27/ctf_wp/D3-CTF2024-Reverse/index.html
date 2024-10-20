@@ -19,26 +19,26 @@
     <meta name="description" content="写在前面逆向部分题目很不错，VM题的伪随机控制流和迷宫题异常处理设置很巧妙，还剩两道没力气逆了，以后再补 ezjunk花指令，直接NOP掉，反编译main函数   加密部分是xxtea，观察调用时传入的参数，a2是sum，来自loc_4015C3+2，a3是delta，来自loc_401A1C，a4是key,来自off_404350 + 400 delta在main里面，刚好是patch掉的部分，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="D3^CTF2024-Reverse">
-<meta property="og:url" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/index.html">
+<meta property="og:url" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/index.html">
 <meta property="og:site_name" content="NOXKE">
 <meta property="og:description" content="写在前面逆向部分题目很不错，VM题的伪随机控制流和迷宫题异常处理设置很巧妙，还剩两道没力气逆了，以后再补 ezjunk花指令，直接NOP掉，反编译main函数   加密部分是xxtea，观察调用时传入的参数，a2是sum，来自loc_4015C3+2，a3是delta，来自loc_401A1C，a4是key,来自off_404350 + 400 delta在main里面，刚好是patch掉的部分，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-51-30-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-52-29-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-58-14-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-07-11-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-19-11-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-56-17-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-42-40-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-59-38-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-11-07-03-image.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-42-40-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-51-30-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-52-29-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-58-14-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-07-11-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-19-11-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-23-56-17-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-42-40-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-59-38-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-11-07-03-image.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-28-10-42-40-image.png">
 <meta property="article:published_time" content="2024-04-27T14:41:39.000Z">
 <meta property="article:modified_time" content="2024-04-28T03:33:19.644Z">
 <meta property="article:author" content="noxke">
 <meta property="article:tag" content="RE">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-51-30-image.png">
+<meta name="twitter:image" content="https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/assets/2024-04-27-22-51-30-image.png">
   
   
   
@@ -80,7 +80,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"blog.noxke.fun","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -435,7 +435,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>D3^CTF2024-Reverse</div>
-      <div>https://blog.noxke.icu/2024/04/27/ctf_wp/D3-CTF2024-Reverse/</div>
+      <div>https://blog.noxke.fun/2024/04/27/ctf_wp/D3-CTF2024-Reverse/</div>
     </div>
     <div class="license-meta">
       

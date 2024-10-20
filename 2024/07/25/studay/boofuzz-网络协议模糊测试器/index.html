@@ -19,18 +19,18 @@
     <meta name="description" content="boofuzz jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com) boofuzz是Sulley框架的继承者，修复了Sulley中存在的bug，并增强了可扩展性  boofuzz的特点  安装简单 pip install boofuzz  易于使用，基于Python脚本编">
 <meta property="og:type" content="article">
 <meta property="og:title" content="boofuzz-网络协议模糊测试器">
-<meta property="og:url" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/index.html">
+<meta property="og:url" content="https://blog.noxke.fun/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/index.html">
 <meta property="og:site_name" content="NOXKE">
 <meta property="og:description" content="boofuzz jtpereyda&#x2F;boofuzz: A fork and successor of the Sulley Fuzzing Framework (github.com) boofuzz是Sulley框架的继承者，修复了Sulley中存在的bug，并增强了可扩展性  boofuzz的特点  安装简单 pip install boofuzz  易于使用，基于Python脚本编">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
-<meta property="og:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/w29YdknI.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
+<meta property="og:image" content="https://blog.noxke.fun/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/w29YdknI.png">
 <meta property="article:published_time" content="2024-07-25T08:31:56.000Z">
 <meta property="article:modified_time" content="2024-09-13T04:10:09.793Z">
 <meta property="article:author" content="noxke">
 <meta property="article:tag" content="boofuzz">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://blog.noxke.icu/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
+<meta name="twitter:image" content="https://blog.noxke.fun/2024/07/25/studay/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8/boofuzz-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E5%99%A8.assets/GsddQeJy.png">
   
   
   
@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"blog.noxke.icu","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"blog.noxke.fun","root":"/","version":"1.9.5-a","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -615,7 +615,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>boofuzz-网络协议模糊测试器</div>
-      <div>https://blog.noxke.icu/2024/07/25/studay/boofuzz-网络协议模糊测试器/</div>
+      <div>https://blog.noxke.fun/2024/07/25/studay/boofuzz-网络协议模糊测试器/</div>
     </div>
     <div class="license-meta">
       
